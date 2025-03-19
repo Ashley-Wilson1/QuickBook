@@ -5,8 +5,16 @@ from django.views.generic import ListView, FormView,DetailView,CreateView
 from .models import Room, RoomBooking
 from .forms import AvailabilityForm
 from django.contrib import messages
-# def dashboard(request):
-#     return render(request, 'dashboard.html', {})
+from .serializers import RoomSerializer,RoomBookingSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import generics
+from django.conf import settings
+
+
+
+
+
+
 
 class BookingList(ListView):
     model=RoomBooking
@@ -41,7 +49,9 @@ def CancelBooking(request, booking_id):
 
 
 
-class CreateBooking(FormView):
+class CreateBooking(generics.ListCreateAPIView):
+    serializer_class = RoomBookingSerializer
+    permission_classes = [IsAuthenticated]
     form_class = AvailabilityForm
     template_name = 'create_booking.html'
 
@@ -64,3 +74,24 @@ class CreateBooking(FormView):
         except ValidationError as e:
             messages.error(self.request, e.messages[0])# Show error message to user
             return self.form_invalid(form)  # Re-render form with errors
+
+
+
+class CreateBooking(generics.ListCreateAPIView):
+    serializer_class = RoomBookingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RoomBooking.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            room_number = self.request.data.get("room")  # Expecting room ID from request
+            requested_room = get_object_or_404(Room, id=room_number)  # Ensure room exists
+            
+            try:
+                serializer.save(user=self.request.user, room=requested_room)
+            except ValidationError as e:
+                messages.error(self.request, e.messages[0])  # Show error in UI
+        else:
+            print(serializer.errors)
