@@ -1,3 +1,4 @@
+from django.utils.timezone import localtime
 from django.db import models
 from django.forms import ValidationError
 from django.contrib.auth.models import User
@@ -31,6 +32,8 @@ class RoomBooking(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        user_name = self.user.first_name if self.user.first_name else self.user.email
-        return f"{user_name} has booked Room {self.room.number} from {self.start_datetime} to {self.end_datetime}"
+        user_name = self.user.username if self.user.username else self.user.email
+        start_time = localtime(self.start_datetime).strftime('%Y-%m-%d %H:%M')  # Format without +00:00
+        end_time = localtime(self.end_datetime).strftime('%Y-%m-%d %H:%M')
+        return f"{user_name} has booked Room {self.room.number} from {start_time} to {end_time}"
 
