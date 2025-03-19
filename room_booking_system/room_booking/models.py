@@ -1,7 +1,7 @@
 from django.utils.timezone import localtime
 from django.db import models
 from django.forms import ValidationError
-from django.contrib.auth.models import User
+from django.conf import settings
 
 class Room(models.Model):  # Automatic pk given
     number = models.IntegerField(unique=True)
@@ -13,7 +13,7 @@ class Room(models.Model):  # Automatic pk given
 class RoomBooking(models.Model):
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE) 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
     def clean(self):
