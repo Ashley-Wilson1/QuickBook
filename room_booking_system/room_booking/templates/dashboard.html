@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Dashboard</h1>
+    <a href ="{% url 'create_booking' %}"><button>Book Room</button></a>
     {% for booking in roombooking_list %}
         <h3><a href = "{% url 'booking-detail' booking.pk %}">{{ booking }}</a></h3>
        

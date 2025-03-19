@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, FormView,DetailView,CreateView
 from .models import Room, RoomBooking
 from .forms import AvailabilityForm
+from django.contrib import messages
 # def dashboard(request):
 #     return render(request, 'dashboard.html', {})
 
@@ -13,10 +14,12 @@ class BookingList(ListView):
     def get_queryset(self, *args, **kwargs):
         if self.request.user.is_staff: #super user also staff
             booking_list= RoomBooking.objects.all()
-            return booking_list
         else:
             booking_list = RoomBooking.objects.filter(user=self.request.user) # only returns users bookings
-            return booking_list
+            
+        # Consume messages so they don't appear again
+        list(messages.get_messages(self.request))
+        return booking_list
 
 class BookingDetailView(DetailView):
     model = RoomBooking
@@ -36,7 +39,7 @@ def CancelBooking(request, booking_id):
 
     return redirect('dashboard')  # Redirect if accessed without POST
 
-from django.contrib import messages
+
 
 class CreateBooking(FormView):
     form_class = AvailabilityForm
@@ -59,5 +62,5 @@ class CreateBooking(FormView):
             return redirect('dashboard')
 
         except ValidationError as e:
-            messages.error(self.request, e.message)  # Show error message to user
+            messages.error(self.request, e.messages[0])# Show error message to user
             return self.form_invalid(form)  # Re-render form with errors
