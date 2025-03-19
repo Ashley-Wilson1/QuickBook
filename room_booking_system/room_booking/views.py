@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, FormView,DetailView
+from django.views.generic import ListView, FormView,DetailView,CreateView
 from .models import Room, RoomBooking
 
 # def dashboard(request):
@@ -20,7 +20,7 @@ class BookingDetailView(DetailView):
     model = RoomBooking
     template_name = "booking_details.html"
 
-def cancel_booking(request, booking_id):
+def CancelBooking(request, booking_id):
     if request.method == "POST":
         if request.user.is_superuser:
             # Superuser can delete any booking
@@ -33,3 +33,8 @@ def cancel_booking(request, booking_id):
         return redirect('dashboard')  # Redirect to the booking list page
 
     return redirect('dashboard')  # Redirect if accessed without POST
+
+class CreateBooking(CreateView):
+    model = RoomBooking
+    template_name = 'create_booking.html'
+    fields = '__all__'
