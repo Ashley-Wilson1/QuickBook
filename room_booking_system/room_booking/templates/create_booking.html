@@ -7,9 +7,22 @@
 </head>
 <body>
     <h1>Create Booking</h1>
-    <form method="POST">
-        {%csrf_token%}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <form action="" method="POST">
         {{form.as_p}}
-        <button>Book</button>
+        {% csrf_token %}
+        <button type="submit">Book</button>
+    </form>
+    <a href ="{% url 'dashboard' %}"><button>Back</button></a>
+
+        
 </body>
 </html>

@@ -14,8 +14,7 @@ class AvailabilityForm(forms.Form):
             'type': 'datetime-local',
         }))
     end_datetime = forms.DateTimeField(required=True,widget=forms.DateTimeInput(attrs={
-            'type': 'datetime-local',
+            'type': 'datetime-local', 
         }))
     
-    want_another_room = forms.BooleanField(required=False, initial=False, label="Allow automatic booking of another room if requested room is unavailable")
 

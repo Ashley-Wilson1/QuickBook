@@ -1,7 +1,9 @@
+from django.forms import ValidationError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, FormView,DetailView,CreateView
 from .models import Room, RoomBooking
-
+from .forms import AvailabilityForm
 # def dashboard(request):
 #     return render(request, 'dashboard.html', {})
 
@@ -34,7 +36,28 @@ def CancelBooking(request, booking_id):
 
     return redirect('dashboard')  # Redirect if accessed without POST
 
-class CreateBooking(CreateView):
-    model = RoomBooking
+from django.contrib import messages
+
+class CreateBooking(FormView):
+    form_class = AvailabilityForm
     template_name = 'create_booking.html'
-    fields = '__all__'
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        room_number = data['room_number']
+        requested_room = Room.objects.get(number=room_number)  # Get the selected room
+
+        try:
+            # Try to create the booking
+            booking = RoomBooking.objects.create(
+                user=self.request.user,
+                room=requested_room,
+                start_datetime=data['start_datetime'],
+                end_datetime=data['end_datetime']
+            )
+            messages.success(self.request, "Booking created successfully!")
+            return redirect('dashboard')
+
+        except ValidationError as e:
+            messages.error(self.request, e.message)  # Show error message to user
+            return self.form_invalid(form)  # Re-render form with errors
