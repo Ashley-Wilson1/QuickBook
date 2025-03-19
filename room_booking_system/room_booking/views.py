@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, FormView,DetailView
 from .models import Room, RoomBooking
 
@@ -19,3 +19,17 @@ class BookingList(ListView):
 class BookingDetailView(DetailView):
     model = RoomBooking
     template_name = "booking_details.html"
+
+def cancel_booking(request, booking_id):
+    if request.method == "POST":
+        if request.user.is_superuser:
+            # Superuser can delete any booking
+            booking = get_object_or_404(RoomBooking, id=booking_id)
+        else:
+            # Regular users can only delete their own bookings
+            booking = get_object_or_404(RoomBooking, id=booking_id, user=request.user)
+
+        booking.delete()
+        return redirect('dashboard')  # Redirect to the booking list page
+
+    return redirect('dashboard')  # Redirect if accessed without POST
