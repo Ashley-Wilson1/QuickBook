@@ -15,3 +15,7 @@ class BookingList(ListView):
         else:
             booking_list = RoomBooking.objects.filter(user=self.request.user) # only returns users bookings
             return booking_list
+
+class BookingDetailView(DetailView):
+    model = RoomBooking
+    template_name = "booking_details.html"

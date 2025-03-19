@@ -8,7 +8,7 @@
 <body>
     <h1>Dashboard</h1>
     {% for booking in roombooking_list %}
-        <h2>{{ booking }}</h2>
+        <h3><a href = "{% url 'booking-detail' booking.pk %}">{{ booking }}</a></h3>
        
     {% endfor %}
 </body>
