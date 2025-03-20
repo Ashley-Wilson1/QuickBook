@@ -8,7 +8,22 @@ function ProtectedRoute({ children }) {
 
 	const refreshToken = async () => {};
 
-	const auth = async () => {};
+	const auth = async () => {
+		const token = localStorage.getItem(ACCESS_TOKEN);
+		if (!token) {
+			setIsAuthorized(false);
+			return;
+		}
+		const decoded = jwtDecode(token);
+		const tokenExpiration = decoded.exp;
+		const now = Date.now() / 1000; //get time in seconds
+
+		if (tokenExpiration < now) {
+			await refreshToken();
+		} else {
+			setIsAuthorized(true);
+		}
+	};
 
 	if (isAuthorized === null) {
 		return <div>Loading...</div>;
