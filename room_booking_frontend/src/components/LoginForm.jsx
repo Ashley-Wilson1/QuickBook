@@ -9,7 +9,7 @@ function LoginForm({ route }) {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const hadnleSubmit = async (e) => {
+	const handleSubmit = async (e) => {
 		setLoading(true);
 		e.preventDefault(); //stops us from refreshing the page
 
@@ -26,7 +26,7 @@ function LoginForm({ route }) {
 	};
 
 	return (
-		<form onSubmit={hadnleSubmit} className="form-container">
+		<form onSubmit={handleSubmit} className="form-container">
 			<h1>Login</h1>
 			<input className="form-input" type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
 			<input className="form-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
