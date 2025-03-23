@@ -9,7 +9,7 @@ function RegisterForm({ route }) {
 	const [email, setEmail] = useState("");
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [userType, setUserType] = useState("");
+	const [userType, setUserType] = useState("student");
 
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import LoginForm from "../components/LoginForm";
 
 function Login() {
-	return <LoginForm route="members/user/login" />;
+	return <LoginForm route="members/token/" />;
 }
 
 export default Login;
