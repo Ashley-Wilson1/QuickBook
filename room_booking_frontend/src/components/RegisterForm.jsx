@@ -1,9 +1,9 @@
 import { useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import "../styles/Form.css";
 
-function LoginForm({ route }) {
+function RegisterForm({ route }) {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
@@ -19,7 +19,14 @@ function LoginForm({ route }) {
 		e.preventDefault(); //stops us from refreshing the page
 
 		try {
-			const res = await api.post(route, { username, password, firstName, lastName, email, userType });
+			const res = await api.post(route, {
+				username,
+				password,
+				first_name: firstName,
+				last_name: lastName,
+				email,
+				user_type: userType,
+			});
 			navigate("/login");
 		} catch (error) {
 			alert(error);
@@ -53,3 +60,5 @@ function LoginForm({ route }) {
 		</form>
 	);
 }
+
+export default RegisterForm;

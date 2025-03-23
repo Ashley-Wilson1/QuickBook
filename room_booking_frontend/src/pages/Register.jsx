@@ -1,5 +1,7 @@
+import RegisterForm from "../components/RegisterForm";
+
 function Register() {
-	return <div>Register</div>;
+	return <RegisterForm route="members/user/register" />;
 }
 
 export default Register;
