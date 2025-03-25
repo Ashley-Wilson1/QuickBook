@@ -10,7 +10,7 @@ function RegisterForm({ route }) {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [userType, setUserType] = useState("student");
-
+	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
@@ -29,7 +29,13 @@ function RegisterForm({ route }) {
 			});
 			navigate("/login");
 		} catch (error) {
-			alert(error);
+			if (error.response && error.response.data) {
+				// Set specific field errors if API returns validation errors
+				setErrors(error.response.data);
+			} else {
+				// Set general error if no specific field error is returned
+				setErrors({ general: "Registration failed. Please try again." });
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -38,7 +44,9 @@ function RegisterForm({ route }) {
 	return (
 		<form onSubmit={handleSubmit} className="form-container">
 			<h1>Register</h1>
+			{errors.username && <p className="error-message">{errors.username[0]}</p>}
 			<input className="form-input" type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required />
+			{errors.email && <p className="error-message">{errors.email[0]}</p>}
 			<input className="form-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
 			<input className="form-input" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" />
 			<input className="form-input" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" />
@@ -57,6 +65,7 @@ function RegisterForm({ route }) {
 			<button className="form-button" type="submit">
 				Register
 			</button>
+			{errors.general && <p className="error-message">{errors.general}</p>}
 		</form>
 	);
 }

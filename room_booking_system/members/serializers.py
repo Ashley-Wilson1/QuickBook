@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        """Check if the email is already registered."""
+        """Check if the email is already registered. can add here later to check email format for leedsbeckett emails"""
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email is already registered.")
         return value
