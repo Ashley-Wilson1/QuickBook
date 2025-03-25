@@ -1,6 +1,6 @@
 from django.urls import path
 # from .views import BookingList, BookingDetailView, CancelBooking, CreateBooking
-from views import CreateBooking, BookingDelete, RoomListView
+from room_booking.views import CreateBooking, BookingDelete, RoomListView
 
 urlpatterns = [
     # path('',BookingList.as_view(),name="dashboard"),
