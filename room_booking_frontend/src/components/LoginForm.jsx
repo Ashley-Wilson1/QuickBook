@@ -8,6 +8,8 @@ function LoginForm({ route }) {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [errors, setErrors] = useState({ username: "", password: "", general: "" });
+
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
@@ -20,7 +22,20 @@ function LoginForm({ route }) {
 			localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
 			navigate("/");
 		} catch (error) {
-			alert(error);
+			if (error.response && error.response.data) {
+				const errorMessage = error.response.data.error || error.response.data.detail; // Check both formats
+
+				if (errorMessage.includes("No active account found")) {
+					// This is the default Django error for incorrect username or password
+					setErrors({ username: "", password: "Incorrect username or password.", general: "" });
+				} else if (errorMessage.includes("Username does not exist")) {
+					setErrors({ username: errorMessage, password: "", general: "" });
+				} else {
+					setErrors({ username: "", password: "", general: "Login failed. Please try again." });
+				}
+			} else {
+				setErrors({ username: "", password: "", general: "Something went wrong. Please try again later." });
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -29,8 +44,13 @@ function LoginForm({ route }) {
 	return (
 		<form onSubmit={handleSubmit} className="form-container">
 			<h1>Login</h1>
+			{errors.username && <p className="error-message">{errors.username}</p>}
+			{errors.general && <p className="error-message">{errors.general}</p>}
+			{errors.password && <p className="error-message">{errors.password}</p>}
 			<input className="form-input" type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+
 			<input className="form-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+
 			<button className="form-button" type="submit">
 				Login
 			</button>
