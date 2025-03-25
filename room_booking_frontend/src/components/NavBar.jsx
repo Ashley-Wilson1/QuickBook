@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import api from "../api";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/NavBar.css";
 
 function NavBar() {
 	const [user, setUser] = useState(null);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -17,24 +20,34 @@ function NavBar() {
 		fetchUser();
 	}, []);
 
+	const handleLogout = () => {
+		localStorage.removeItem(ACCESS_TOKEN);
+		navigate("/login");
+	};
+
 	return (
-		<nav>
-			<div>
-				<a href="/">QuickBook</a>
+		<nav className="navbar">
+			<div className="nav-left">
+				<Link to="/" className="nav-logo">
+					QuickBook
+				</Link>
+				<Link to="/RoomBooking" className="nav-link">
+					Room Booking
+				</Link>
 			</div>
 
-			<div>
-				<a href="/room_booking">Room Booking</a>
-			</div>
-
-			<div>
+			<div className="nav-right">
 				{user ? (
 					<>
-						<span>{user.first_name || user.username}</span>
-						<button>Logout</button>
+						<span className="nav-user">{user.first_name || user.username}</span>
+						<button onClick={handleLogout} className="nav-button">
+							Logout
+						</button>
 					</>
 				) : (
-					<a href="/login">Login</a>
+					<Link to="/login" className="nav-link">
+						Login
+					</Link>
 				)}
 			</div>
 		</nav>
