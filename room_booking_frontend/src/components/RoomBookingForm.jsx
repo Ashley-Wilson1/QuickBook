@@ -44,15 +44,38 @@ function RoomBookingForm() {
 			setStartDateTime("");
 			setEndDateTime("");
 		} catch (error) {
-			const errorMessage = error.response?.data?.error || "An error occurred. Please try again.";
-			setError(errorMessage);
+			let errorMessage = "An unknown error occurred. Please try again.";
+
+			// Check if error.response and error.response.data are available
+			if (error.response && error.response.data) {
+				const errorData = error.response.data.error;
+
+				if (Array.isArray(errorData)) {
+					// If errorData is an array, join the messages into one string
+					errorMessage = errorData.join(" ");
+				} else if (typeof errorData === "string") {
+					// If errorData is a string, use it directly
+					errorMessage = errorData;
+				} else if (errorData && typeof errorData === "object") {
+					// If errorData is an object, handle its values (could be field errors)
+					errorMessage = Object.values(errorData).flat().join(" "); // Flatten array values and join them
+				}
+			}
+
+			// Handle specific error cases
+			if (errorMessage.includes("This room is already booked for the selected time.")) {
+				setError("This room is already booked for the selected time.");
+			} else if (errorMessage.includes("Start time must be before end time.")) {
+				setError("Start time must be before end time.");
+			} else {
+				setError(errorMessage); // Generic error message
+			}
 		}
 	};
-
 	return (
 		<div>
 			<h2>Book a Room</h2>
-			{error && <p style={{ color: "red" }}>{error}</p>}
+			{error && <p className="error-message">{error}</p>}
 			{success && <p style={{ color: "green" }}>{success}</p>}
 			<form onSubmit={handleSubmit}>
 				<label>Room:</label>

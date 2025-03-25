@@ -9,7 +9,7 @@ from .serializers import RoomSerializer,RoomBookingSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny,IsAdminUser
 from rest_framework import generics
 from django.conf import settings
-
+from rest_framework.exceptions import ValidationError as DRFValidationError
    
 class CreateBooking(generics.ListCreateAPIView):
     serializer_class = RoomBookingSerializer
@@ -35,7 +35,7 @@ class CreateBooking(generics.ListCreateAPIView):
             booking.save()  # Calls full_clean() -> will raise ValidationError if invalid
             serializer.instance = booking
         except ValidationError as e:
-            raise ValidationError({"error": e.message})
+            raise DRFValidationError({"error": e.message})
 
 
 class BookingDelete(generics.DestroyAPIView):
