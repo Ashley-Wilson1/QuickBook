@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/BookingList.css";
 
 function BookingList({ bookings }) {
 	return (

@@ -6,7 +6,7 @@ function Home() {
 	return (
 		<div>
 			<NavBar />
-			<h1> Dashboard</h1>
+
 			<UserBookings />
 		</div>
 	);
