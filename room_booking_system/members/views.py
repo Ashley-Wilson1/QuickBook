@@ -7,11 +7,22 @@ from rest_framework.response import Response
 from .models import User as CustomUser
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
+from .serializers import UserSerializer
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]  # No need for authentication during signup
+
+class RetrieveUserView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]  # Only authenticated users can access their profile
+
+    def get_object(self):
+        # Ensure the user can only access their own details
+        return self.request.user
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
