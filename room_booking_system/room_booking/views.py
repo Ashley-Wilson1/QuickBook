@@ -24,13 +24,18 @@ class CreateBooking(generics.ListCreateAPIView):
         end_datetime = self.request.data.get("end_datetime")
 
         requested_room = get_object_or_404(Room, id=room_id)  # Ensure the room exists
+        booking = RoomBooking(
+            user=self.request.user,
+            room=requested_room,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+        )
 
-        # Manually validate time fields
-        if start_datetime >= end_datetime:
-            raise ValidationError({"error": "Start time must be before end time."})
-
-        # Save the booking with the user and validated room
-        serializer.save(user=self.request.user, room=requested_room, start_datetime=start_datetime, end_datetime=end_datetime)
+        try:
+            booking.save()  # Calls full_clean() -> will raise ValidationError if invalid
+            serializer.instance = booking
+        except ValidationError as e:
+            raise ValidationError({"error": e.message})
 
 
 class BookingDelete(generics.DestroyAPIView):

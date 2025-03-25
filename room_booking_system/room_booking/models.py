@@ -26,6 +26,8 @@ class RoomBooking(models.Model):
 
         if overlapping_bookings.exists():
             raise ValidationError("This room is already booked for the selected time.")
+        if self.start_datetime >= self.end_datetime:
+            raise ValidationError("Start time must be before end time.")
 
     def save(self, *args, **kwargs):
         self.clean()  # Run validation before saving
