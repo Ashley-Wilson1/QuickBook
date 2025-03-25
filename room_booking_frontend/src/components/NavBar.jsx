@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../api";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/NavBar.css";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 
 function NavBar() {
 	const [user, setUser] = useState(null);
@@ -21,8 +22,9 @@ function NavBar() {
 	}, []);
 
 	const handleLogout = () => {
-		localStorage.removeItem(ACCESS_TOKEN);
-		navigate("/login");
+		localStorage.removeItem(ACCESS_TOKEN, REFRESH_TOKEN);
+
+		navigate("/logout");
 	};
 
 	return (
