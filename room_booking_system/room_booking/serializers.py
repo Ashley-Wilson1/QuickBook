@@ -8,7 +8,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
 class RoomBookingSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()  # Display user's username instead of ID
-
+    room = RoomSerializer()
     class Meta:
         model = RoomBooking
         fields = ['id', 'room', 'user', 'start_datetime', 'end_datetime']
