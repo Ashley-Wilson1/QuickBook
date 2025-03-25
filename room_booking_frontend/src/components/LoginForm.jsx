@@ -34,6 +34,9 @@ function LoginForm({ route }) {
 			<button className="form-button" type="submit">
 				Login
 			</button>
+			<p>
+				Don't Have an account? You can <a href="/register">Sign up here</a>.
+			</p>
 		</form>
 	);
 }

@@ -62,10 +62,14 @@ function RegisterForm({ route }) {
 				placeholder="Password"
 				required
 			/>
+			{errors.general && <p className="error-message">{errors.general}</p>}
 			<button className="form-button" type="submit">
 				Register
 			</button>
-			{errors.general && <p className="error-message">{errors.general}</p>}
+
+			<p>
+				Already have an account? You can <a href="/login">Login here</a>.
+			</p>
 		</form>
 	);
 }
