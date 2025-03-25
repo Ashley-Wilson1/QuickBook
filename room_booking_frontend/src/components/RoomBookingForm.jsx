@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api"; // Ensure this handles JWT authentication
+import "../styles/Booking.css";
 
 function RoomBookingForm() {
 	const [rooms, setRooms] = useState([]);
@@ -73,7 +74,7 @@ function RoomBookingForm() {
 		}
 	};
 	return (
-		<div>
+		<div className="room-booking-form">
 			<h2>Book a Room</h2>
 			{error && <p className="error-message">{error}</p>}
 			{success && <p style={{ color: "green" }}>{success}</p>}
