@@ -53,6 +53,12 @@ class RoomDelete(generics.DestroyAPIView):
     serializer_class = RoomSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
     
+
+
+class RoomListView(generics.ListAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = [AllowAny]
 # class BookingList(ListView):
 #     model=RoomBooking
 #     template_name = 'dashboard.html'
