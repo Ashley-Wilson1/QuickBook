@@ -19,7 +19,7 @@ class CreateBooking(generics.ListCreateAPIView):
         return RoomBooking.objects.filter(user=self.request.user)  # Show only the user's bookings
 
     def perform_create(self, serializer):
-        room_id = self.request.data.get("room")  
+        room_id = self.request.data.get("room_id")  
         start_datetime = self.request.data.get("start_datetime")
         end_datetime = self.request.data.get("end_datetime")
 

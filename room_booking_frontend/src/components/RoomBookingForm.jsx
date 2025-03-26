@@ -35,7 +35,7 @@ function RoomBookingForm() {
 
 		try {
 			const res = await api.post("/room_booking/bookings/", {
-				room,
+				room_id: room,
 				start_datetime: startDateTime,
 				end_datetime: endDateTime,
 			});

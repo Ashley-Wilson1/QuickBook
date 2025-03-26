@@ -8,10 +8,12 @@ class RoomSerializer(serializers.ModelSerializer):
 
 class RoomBookingSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()  # Display user's username instead of ID
-    room = RoomSerializer()
+    room_id = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())  
+    room = RoomSerializer(read_only=True)
+
     class Meta:
         model = RoomBooking
-        fields = ['id', 'room', 'user', 'start_datetime', 'end_datetime']
+        fields = ['id', 'room','room_id', 'user', 'start_datetime', 'end_datetime']
 
         extra_kwargs = {
             'user':{'read_only': True}
