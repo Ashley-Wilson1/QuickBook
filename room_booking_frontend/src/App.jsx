@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import RoomBooking from "./pages/RoomBooking";
 import NotFound from "./pages/NotFound";
+import BookingDetails from "./pages/BookingDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function Logout() {
@@ -35,6 +36,14 @@ function App() {
 					element={
 						<ProtectedRoute>
 							<RoomBooking />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/booking/:bookingId"
+					element={
+						<ProtectedRoute>
+							<BookingDetails />
 						</ProtectedRoute>
 					}
 				/>
