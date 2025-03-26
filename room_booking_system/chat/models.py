@@ -1,9 +1,10 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+#from django.contrib.auth import get_user_model
+from members.models import User
 from room_booking.models import RoomBooking  
 
 
-User = get_user_model()
+
 
 class Message(models.Model):
     booking = models.ForeignKey(RoomBooking, on_delete=models.CASCADE, related_name="messages")
