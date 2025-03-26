@@ -1,5 +1,5 @@
 from django.forms import ValidationError
-from django.http import HttpResponse
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, FormView,DetailView,CreateView
 from .models import Room, RoomBooking
@@ -11,7 +11,8 @@ from rest_framework import generics
 from django.conf import settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.contrib.auth import get_user_model
-   
+from rest_framework.views import APIView
+
 User = get_user_model()
 
 class CreateBooking(generics.ListCreateAPIView):
@@ -83,3 +84,10 @@ class UserBookingsView(generics.ListAPIView):
     def get_queryset(self):
         return RoomBooking.objects.filter(users=self.request.user).prefetch_related('users')
 
+class BookingDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, booking_id):
+        booking = get_object_or_404(RoomBooking, id=booking_id)
+        serializer = RoomBookingSerializer(booking)
+        return Response(serializer.data)

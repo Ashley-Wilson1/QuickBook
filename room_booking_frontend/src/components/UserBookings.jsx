@@ -11,7 +11,6 @@ function UserBookings() {
 		const fetchBookings = async () => {
 			try {
 				const res = await api.get("room_booking/user/bookings/");
-
 				setBookings(res.data);
 			} catch (error) {
 				setError("Error fetching bookings. Please try again later.");
