@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'room_booking',
+    'chat',
     'members',
 ]
 
