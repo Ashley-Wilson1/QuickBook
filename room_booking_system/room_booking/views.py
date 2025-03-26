@@ -43,7 +43,7 @@ class CreateBooking(generics.ListCreateAPIView):
             
 
         try:
-            booking.full_clean()
+            #booking.full_clean()
             booking.save()
             booking.users.set(users)
         except ValidationError as e:

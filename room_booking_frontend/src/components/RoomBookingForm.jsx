@@ -9,6 +9,23 @@ function RoomBookingForm() {
 	const [endDateTime, setEndDateTime] = useState("");
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
+	const [userSearchResults, setUserSearchResults] = useState([]);
+	const [userSearch, setUserSearch] = useState("");
+	const [selectedUsers, setSelectedUsers] = useState([]);
+	const [user, setUser] = useState(null);
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const res = await api.get("/members/user/profile/");
+				setUser(res.data);
+			} catch (error) {
+				console.error("Error fetching user details:", error);
+			}
+		};
+
+		fetchUser();
+	}, []);
 
 	useEffect(() => {
 		const fetchRooms = async () => {
@@ -23,6 +40,27 @@ function RoomBookingForm() {
 		fetchRooms();
 	}, []);
 
+	const handleUserSearch = async (e) => {
+		setUserSearch(e.target.value);
+		try {
+			if (e.target.value) {
+				const res = await api.get(`/users/search/?email=${e.target.value}`);
+				setUserSearchResults(res.data);
+			} else {
+				setUserSearchResults([]);
+			}
+		} catch (error) {
+			console.error("Error fetching user search results:", error);
+		}
+	};
+
+	// Add user to selected users list
+	const handleAddUser = (user) => {
+		if (!selectedUsers.some((u) => u.id === user.id)) {
+			setSelectedUsers([...selectedUsers, user]);
+		}
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
@@ -33,17 +71,38 @@ function RoomBookingForm() {
 			return;
 		}
 
+		// Get the logged-in user's ID dynamically
+		const loggedInUserId = user.id;
+
+		if (!loggedInUserId) {
+			setError("Logged in user ID not found.");
+			return;
+		}
+
+		// Add the logged-in user to the list of users
+		const usersToSubmit = [loggedInUserId, ...selectedUsers.map((user) => user.id)]; // Ensure you're sending user IDs
+
+		// Log the request data for debugging
+		console.log("Request Data:", {
+			room_id: room,
+			start_datetime: startDateTime,
+			end_datetime: endDateTime,
+			users: usersToSubmit, // Send the IDs of selected users
+		});
+
 		try {
 			const res = await api.post("/room_booking/bookings/", {
 				room_id: room,
 				start_datetime: startDateTime,
 				end_datetime: endDateTime,
+				users: usersToSubmit, // Send the IDs of selected users
 			});
 
 			setSuccess("Booking created successfully!");
 			setRoom("");
 			setStartDateTime("");
 			setEndDateTime("");
+			setSelectedUsers([]); // Clear selected users after successful booking
 		} catch (error) {
 			let errorMessage = "An unknown error occurred. Please try again.";
 
@@ -73,6 +132,7 @@ function RoomBookingForm() {
 			}
 		}
 	};
+
 	return (
 		<div className="room-booking-form">
 			<h2>Book a Room</h2>
@@ -94,6 +154,23 @@ function RoomBookingForm() {
 
 				<label>End Time:</label>
 				<input type="datetime-local" value={endDateTime} onChange={(e) => setEndDateTime(e.target.value)} required />
+
+				<label>Search for Users by Email:</label>
+				<input type="text" value={userSearch} onChange={handleUserSearch} placeholder="Search by email" />
+				<ul>
+					{userSearchResults.map((user) => (
+						<li key={user.id} onClick={() => handleAddUser(user)}>
+							{user.email} - {user.first_name} {user.last_name}
+						</li>
+					))}
+				</ul>
+
+				<h4>Selected Users:</h4>
+				<ul>
+					{selectedUsers.map((user) => (
+						<li key={user.id}>{user.email}</li>
+					))}
+				</ul>
 
 				<button type="submit">Book Room</button>
 			</form>

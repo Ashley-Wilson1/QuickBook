@@ -16,7 +16,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
 class RoomBookingSerializer(serializers.ModelSerializer):
     #user = serializers.StringRelatedField()  
-    users = UserSerializer(many=True)
+    users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
     room_id = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())  
     room = RoomSerializer(read_only=True)
     #users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, write_only=True)

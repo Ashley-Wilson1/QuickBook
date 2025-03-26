@@ -45,3 +45,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             return Response({"error": "Incorrect password."}, status=status.HTTP_400_BAD_REQUEST)
 
         return response
+    
+class UserEmailSearchView(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        
+        email_query = self.request.query_params.get('email', None)
+        if email_query:
+            return User.objects.filter(email__icontains=email_query)  
+        return User.objects.none()  
