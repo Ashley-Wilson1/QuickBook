@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
 import ChatBox from "./ChatBox";
+import "../styles/BookingDetails.css";
 
 function BookingDetails() {
 	const { bookingId } = useParams();
@@ -21,11 +22,12 @@ function BookingDetails() {
 	if (!booking) return <p>Loading booking details...</p>;
 
 	return (
-		<div>
+		<div className="booking-details">
 			<h2>Booking Details</h2>
 			<p>Room: {booking.room.number}</p>
-			<p>Start Time: {new Date(booking.start_datetime).toLocaleString()}</p>
-			<p>End Time: {new Date(booking.end_datetime).toLocaleString()}</p>
+			<p>Start Time: {new Date(booking.start_datetime).toISOString().replace("T", " ").substring(0, 16)}</p>
+			<p>End Time: {new Date(booking.end_datetime).toISOString().replace("T", " ").substring(0, 16)}</p>
+			<p>Users in the meeting:</p>
 			<ul>
 				{booking.users_detail.map((user) => (
 					<li key={user.id}>
@@ -33,7 +35,7 @@ function BookingDetails() {
 					</li>
 				))}
 			</ul>
-			{/* Pass bookingId to ChatBox */}
+
 			<ChatBox bookingId={bookingId} />
 		</div>
 	);
