@@ -48,7 +48,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     
 class UserEmailSearchView(generics.ListAPIView):
     serializer_class = UserSerializer
-
+    queryset = User.objects.all()
+    
     def get_queryset(self):
         
         email_query = self.request.query_params.get('email', None)

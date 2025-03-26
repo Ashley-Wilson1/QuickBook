@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../api"; // Ensure this handles JWT authentication
+import api from "../api";
 import "../styles/Booking.css";
 
 function RoomBookingForm() {
@@ -44,7 +44,7 @@ function RoomBookingForm() {
 		setUserSearch(e.target.value);
 		try {
 			if (e.target.value) {
-				const res = await api.get(`/users/search/?email=${e.target.value}`);
+				const res = await api.get(`/members/user/search/?email=${e.target.value}`);
 				setUserSearchResults(res.data);
 			} else {
 				setUserSearchResults([]);
@@ -71,7 +71,6 @@ function RoomBookingForm() {
 			return;
 		}
 
-		// Get the logged-in user's ID dynamically
 		const loggedInUserId = user.id;
 
 		if (!loggedInUserId) {
@@ -87,7 +86,7 @@ function RoomBookingForm() {
 			room_id: room,
 			start_datetime: startDateTime,
 			end_datetime: endDateTime,
-			users: usersToSubmit, // Send the IDs of selected users
+			users: usersToSubmit,
 		});
 
 		try {
@@ -95,7 +94,7 @@ function RoomBookingForm() {
 				room_id: room,
 				start_datetime: startDateTime,
 				end_datetime: endDateTime,
-				users: usersToSubmit, // Send the IDs of selected users
+				users: usersToSubmit,
 			});
 
 			setSuccess("Booking created successfully!");
@@ -111,14 +110,11 @@ function RoomBookingForm() {
 				const errorData = error.response.data.error;
 
 				if (Array.isArray(errorData)) {
-					// If errorData is an array, join the messages into one string
 					errorMessage = errorData.join(" ");
 				} else if (typeof errorData === "string") {
-					// If errorData is a string, use it directly
 					errorMessage = errorData;
 				} else if (errorData && typeof errorData === "object") {
-					// If errorData is an object, handle its values (could be field errors)
-					errorMessage = Object.values(errorData).flat().join(" "); // Flatten array values and join them
+					errorMessage = Object.values(errorData).flat().join(" ");
 				}
 			}
 
