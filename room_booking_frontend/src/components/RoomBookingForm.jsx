@@ -61,6 +61,11 @@ function RoomBookingForm() {
 		}
 	};
 
+	// Remove user from selected users list
+	const handleRemoveUser = (userId) => {
+		setSelectedUsers(selectedUsers.filter((user) => user.id !== userId));
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
@@ -79,7 +84,7 @@ function RoomBookingForm() {
 		}
 
 		// Add the logged-in user to the list of users
-		const usersToSubmit = [loggedInUserId, ...selectedUsers.map((user) => user.id)]; // Ensure you're sending user IDs
+		const usersToSubmit = [loggedInUserId, ...selectedUsers.map((user) => user.id)];
 
 		// Log the request data for debugging
 		console.log("Request Data:", {
@@ -153,18 +158,23 @@ function RoomBookingForm() {
 
 				<label>Search for Users by Email:</label>
 				<input type="text" value={userSearch} onChange={handleUserSearch} placeholder="Search by email" />
-				<ul>
+				<ul className="user-search-results">
 					{userSearchResults.map((user) => (
-						<li key={user.id} onClick={() => handleAddUser(user)}>
+						<li key={user.id} onClick={() => handleAddUser(user)} className="user-search-result">
 							{user.email} - {user.first_name} {user.last_name}
 						</li>
 					))}
 				</ul>
 
-				<h4>Selected Users:</h4>
-				<ul>
+				<label>Selected Users:</label>
+				<ul className="selected-users">
 					{selectedUsers.map((user) => (
-						<li key={user.id}>{user.email}</li>
+						<li key={user.id} className="selected-user">
+							{user.email}
+							<button type="button" className="remove-user-btn" onClick={() => handleRemoveUser(user.id)}>
+								Remove
+							</button>
+						</li>
 					))}
 				</ul>
 
