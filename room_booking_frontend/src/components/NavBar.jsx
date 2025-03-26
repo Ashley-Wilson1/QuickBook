@@ -34,7 +34,7 @@ function NavBar() {
 					QuickBook
 				</Link>
 				<Link to="/RoomBooking" className="nav-link">
-					Room Booking
+					Book a room
 				</Link>
 			</div>
 

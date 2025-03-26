@@ -18,15 +18,13 @@ class RoomSerializer(serializers.ModelSerializer):
 class RoomBookingSerializer(serializers.ModelSerializer):
     
     users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
-    
     # Returns the full user data in the response
     users_detail = UserSerializer(source='users', many=True, read_only=True)
-    
     room = RoomSerializer(read_only=True)
 
     class Meta:
         model = RoomBooking
-        fields = ['id', 'room', 'room_id', 'start_datetime', 'end_datetime', 'users', 'users_detail']
+        fields = ['id', 'purpose','room', 'room_id', 'start_datetime', 'end_datetime', 'users', 'users_detail',]
 
     def create(self, validated_data):
         user_ids = validated_data.pop('users')
@@ -40,4 +38,4 @@ class DetailedRoomBookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomBooking
-        fields = ['id', 'room', 'start_datetime', 'end_datetime', 'users']
+        fields = ['id', 'room', 'start_datetime', 'end_datetime', 'users', 'purpose']

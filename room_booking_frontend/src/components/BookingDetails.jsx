@@ -24,6 +24,7 @@ function BookingDetails() {
 	return (
 		<div className="booking-details">
 			<h2>Booking Details</h2>
+			<p>Purpose: {booking.purpose || "No purpose specified"}</p>
 			<p>Room: {booking.room.number}</p>
 			<p>Start Time: {new Date(booking.start_datetime).toISOString().replace("T", " ").substring(0, 16)}</p>
 			<p>End Time: {new Date(booking.end_datetime).toISOString().replace("T", " ").substring(0, 16)}</p>

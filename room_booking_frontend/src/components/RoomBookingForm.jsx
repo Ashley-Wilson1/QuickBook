@@ -13,6 +13,7 @@ function RoomBookingForm() {
 	const [userSearch, setUserSearch] = useState("");
 	const [selectedUsers, setSelectedUsers] = useState([]);
 	const [user, setUser] = useState(null);
+	const [purpose, setPurpose] = useState("");
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -71,7 +72,7 @@ function RoomBookingForm() {
 		setError("");
 		setSuccess("");
 
-		if (!room || !startDateTime || !endDateTime) {
+		if (!room || !startDateTime || !endDateTime || !purpose) {
 			setError("All fields are required.");
 			return;
 		}
@@ -92,6 +93,7 @@ function RoomBookingForm() {
 			start_datetime: startDateTime,
 			end_datetime: endDateTime,
 			users: usersToSubmit,
+			purpose: purpose,
 		});
 
 		try {
@@ -100,13 +102,15 @@ function RoomBookingForm() {
 				start_datetime: startDateTime,
 				end_datetime: endDateTime,
 				users: usersToSubmit,
+				purpose: purpose,
 			});
 
 			setSuccess("Booking created successfully!");
 			setRoom("");
 			setStartDateTime("");
 			setEndDateTime("");
-			setSelectedUsers([]); // Clear selected users after successful booking
+			setPurpose("");
+			setSelectedUsers([]); // Clear values after successful booking
 		} catch (error) {
 			let errorMessage = "An unknown error occurred. Please try again.";
 
@@ -149,6 +153,15 @@ function RoomBookingForm() {
 						</option>
 					))}
 				</select>
+				<label>Purpose of the Booking:</label>
+				<input
+					className="purpose"
+					type="text"
+					value={purpose}
+					onChange={(e) => setPurpose(e.target.value)}
+					placeholder="Enter the purpose of the booking"
+					required
+				/>
 
 				<label>Start Time:</label>
 				<input type="datetime-local" value={startDateTime} onChange={(e) => setStartDateTime(e.target.value)} required />
@@ -157,7 +170,7 @@ function RoomBookingForm() {
 				<input type="datetime-local" value={endDateTime} onChange={(e) => setEndDateTime(e.target.value)} required />
 
 				<label>Search for Users by Email:</label>
-				<input type="text" value={userSearch} onChange={handleUserSearch} placeholder="Search by email" />
+				<input className="purpose" type="text" value={userSearch} onChange={handleUserSearch} placeholder="Search by email" />
 				<ul className="user-search-results">
 					{userSearchResults.map((user) => (
 						<li key={user.id} onClick={() => handleAddUser(user)} className="user-search-result">

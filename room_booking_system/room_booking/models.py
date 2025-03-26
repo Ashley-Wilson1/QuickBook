@@ -18,6 +18,7 @@ class RoomBooking(models.Model):
     end_datetime = models.DateTimeField()
     users = models.ManyToManyField(User, related_name="bookings") 
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    purpose = models.CharField(max_length=255, blank=True, null=True)
 
     def clean(self):
         # Prevent double booking for the same room

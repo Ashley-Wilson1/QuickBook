@@ -28,6 +28,7 @@ class CreateBooking(generics.ListCreateAPIView):
         start_datetime = self.request.data.get("start_datetime")
         end_datetime = self.request.data.get("end_datetime")
         user_ids = self.request.data.get("users", [])
+        purpose = self.request.data.get("purpose", "")
         requested_room = get_object_or_404(Room, id=room_id)  # Ensure the room exists
 
         if self.request.user.id not in user_ids:
@@ -40,6 +41,7 @@ class CreateBooking(generics.ListCreateAPIView):
             room=requested_room,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
+            purpose = purpose,
         )
             
 
@@ -89,5 +91,7 @@ class BookingDetailView(APIView):
 
     def get(self, request, booking_id):
         booking = get_object_or_404(RoomBooking, id=booking_id)
+        print("Booking Data:", booking)
         serializer = RoomBookingSerializer(booking)
+        print("Serialized Data:", serializer.data)
         return Response(serializer.data)
