@@ -5,7 +5,7 @@ from django.views.generic import ListView, FormView,DetailView,CreateView
 from .models import Room, RoomBooking
 from .forms import AvailabilityForm
 from django.contrib import messages
-from .serializers import RoomSerializer,RoomBookingSerializer
+from .serializers import RoomSerializer,RoomBookingSerializer,DetailedRoomBookingSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny,IsAdminUser
 from rest_framework import generics
 from django.conf import settings
@@ -43,7 +43,6 @@ class CreateBooking(generics.ListCreateAPIView):
             
 
         try:
-            #booking.full_clean()
             booking.save()
             booking.users.set(users)
         except ValidationError as e:
@@ -78,9 +77,9 @@ class RoomListView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
 class UserBookingsView(generics.ListAPIView):
-    serializer_class = RoomBookingSerializer
+    serializer_class = DetailedRoomBookingSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return RoomBooking.objects.filter(user=self.request.user)
+        return RoomBooking.objects.filter(users=self.request.user).prefetch_related('users')
 

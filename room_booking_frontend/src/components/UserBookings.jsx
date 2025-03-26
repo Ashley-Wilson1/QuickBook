@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../api"; // Assuming this is set up to handle JWT tokens and API calls
+import api from "../api";
 import BookingList from "../components/BookingList";
 
 function UserBookings() {
@@ -10,10 +10,8 @@ function UserBookings() {
 	useEffect(() => {
 		const fetchBookings = async () => {
 			try {
-				// Replace this with the appropriate API endpoint for fetching user bookings
-				const res = await api.get("/room_booking/user/bookings/");
+				const res = await api.get("room_booking/user/bookings/");
 
-				// Assuming the response contains the bookings in `res.data`
 				setBookings(res.data);
 			} catch (error) {
 				setError("Error fetching bookings. Please try again later.");
@@ -34,7 +32,7 @@ function UserBookings() {
 		return <p>{error}</p>;
 	}
 
-	return <BookingList bookings={bookings} />;
+	return <div className="user-bookings">{bookings.length > 0 ? <BookingList bookings={bookings} /> : <p>No bookings found.</p>}</div>;
 }
 
 export default UserBookings;
