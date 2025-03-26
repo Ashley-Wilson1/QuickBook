@@ -2,6 +2,9 @@ from django.utils.timezone import localtime
 from django.db import models
 from django.forms import ValidationError
 from django.conf import settings
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class Room(models.Model):  # Automatic pk given
     number = models.IntegerField(unique=True)
@@ -13,7 +16,7 @@ class Room(models.Model):  # Automatic pk given
 class RoomBooking(models.Model):
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
+    users = models.ManyToManyField(User, related_name="bookings") 
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
     def clean(self):
@@ -34,8 +37,8 @@ class RoomBooking(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        user_name = self.user.username if self.user.username else self.user.email
+        #user_name = self.user.username if self.user.username else self.user.email
         start_time = localtime(self.start_datetime).strftime('%Y-%m-%d %H:%M')  # Format without +00:00
         end_time = localtime(self.end_datetime).strftime('%Y-%m-%d %H:%M')
-        return f"{user_name} has booked Room {self.room.number} from {start_time} to {end_time}"
+        return f"Room {self.room.number} booked from {start_time} to {end_time}"
 
