@@ -24,8 +24,8 @@ function BookingList({ bookings }) {
 						{bookings.map((booking) => (
 							<tr key={booking.id} onClick={() => navigate(`/booking/${booking.id}`)} style={{ cursor: "pointer" }}>
 								<td>{booking.room.number}</td>
-								<td>{new Date(booking.start_datetime).toLocaleString()}</td>
-								<td>{new Date(booking.end_datetime).toLocaleString()}</td>
+								<td>{new Date(booking.start_datetime).toISOString().replace("T", " ").substring(0, 16)}</td>
+								<td>{new Date(booking.end_datetime).toISOString().replace("T", " ").substring(0, 16)}</td>
 								<td>
 									<ul>
 										{booking.users.map((user) => (
