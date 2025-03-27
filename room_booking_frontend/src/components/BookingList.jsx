@@ -15,7 +15,7 @@ function BookingList({ bookings }) {
 		<div className="booking-list">
 			<h2>Your Room Bookings</h2>
 			{bookings.length === 0 ? (
-				<p>No bookings available</p>
+				<p>You have no bookings yet.</p>
 			) : (
 				<table>
 					<thead>

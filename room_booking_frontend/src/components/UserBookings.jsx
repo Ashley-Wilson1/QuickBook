@@ -28,10 +28,15 @@ function UserBookings() {
 	}
 
 	if (error) {
+		console.log(error);
 		return <p>{error}</p>;
 	}
 
-	return <div className="user-bookings">{bookings.length > 0 ? <BookingList bookings={bookings} /> : <p>No bookings found.</p>}</div>;
+	return (
+		<div className="user-bookings">
+			<BookingList bookings={bookings} />{" "}
+		</div>
+	);
 }
 
 export default UserBookings;
