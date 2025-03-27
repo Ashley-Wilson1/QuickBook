@@ -16,6 +16,12 @@ from datetime import datetime, time
 from rest_framework import status
 from django.utils import timezone
 import pytz
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime, time
+from .models import RoomBooking
+import pytz
 
 User = get_user_model()
 
@@ -106,12 +112,6 @@ class BookingDetailView(APIView):
         print("Serialized Data:", serializer.data)
         return Response(serializer.data)
     
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from datetime import datetime, time
-from .models import RoomBooking
-import pytz
 
 class AvailableTimesView(APIView):
     def get(self, request, *args, **kwargs):
