@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'room_booking',
     'chat',
+    'notifications',
     'members',
 ]
 
