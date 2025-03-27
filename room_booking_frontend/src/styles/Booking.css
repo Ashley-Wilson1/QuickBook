@@ -7,7 +7,15 @@
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
+.timeline-container {
+	max-width: 600px;
+	margin: 0 auto;
+	margin-top: 50px;
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 .room-booking-form h2 {
 	font-size: 24px;
 	margin-bottom: 20px;
@@ -130,6 +138,88 @@
 
 .selected-user:hover {
 	background-color: #f1f1f1;
+}
+.room-booking-container {
+	display: flex;
+
+	gap: 00px;
+}
+
+.room-booking-form {
+	width: 45%;
+	padding: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	background-color: #f9f9f9;
+}
+
+.timeline-container {
+	width: 45%;
+	padding: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	background-color: #f9f9f9;
+	display: flex;
+	flex-direction: column;
+}
+
+.timeline-header {
+	font-size: 1.2rem;
+	margin-bottom: 1rem;
+}
+
+.timeline {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.timeline .time-slot {
+	padding: 8px;
+	background-color: #e0e0e0;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.timeline .time-slot:hover {
+	background-color: #b0b0b0;
+}
+
+.timeline .available {
+	background-color: #c8e6c9;
+}
+
+.timeline .booked {
+	background-color: #ffcdd2;
+}
+
+.time-slot.selected {
+	background-color: #115ba0; /* Green color */
+	color: white;
+	font-weight: bold;
+	border: 2px solid #0d26b3;
+}
+.time-slot {
+	padding: 10px;
+	margin: 5px 0;
+	border: 1px solid #ccc;
+	text-align: center;
+}
+
+.time-slot.selected {
+	background-color: #4caf50; /* Green for selected */
+	color: white;
+}
+
+.time-slot:hover {
+	background-color: #ddd;
+}
+
+.available-time-slots {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 15px;
 }
 
 /* Responsive design */

@@ -12,6 +12,10 @@ from django.conf import settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+from datetime import datetime, time
+from rest_framework import status
+from django.utils import timezone
+import pytz
 
 User = get_user_model()
 
@@ -36,7 +40,13 @@ class CreateBooking(generics.ListCreateAPIView):
 
         users = User.objects.filter(id__in=user_ids)
         
-        
+        start_datetime = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")
+        end_datetime = datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")
+
+        # Convert the naive datetime object to a timezone-aware datetime object in UTC using pytz
+        start_datetime = timezone.make_aware(start_datetime, pytz.utc)
+        end_datetime = timezone.make_aware(end_datetime, pytz.utc)
+
         booking = RoomBooking(
             room=requested_room,
             start_datetime=start_datetime,
@@ -95,3 +105,51 @@ class BookingDetailView(APIView):
         serializer = RoomBookingSerializer(booking)
         print("Serialized Data:", serializer.data)
         return Response(serializer.data)
+    
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime, time
+from .models import RoomBooking
+import pytz
+
+class AvailableTimesView(APIView):
+    def get(self, request, *args, **kwargs):
+        room_id = request.query_params.get('room_id')
+        date_str = request.query_params.get('date')
+        duration = int(request.query_params.get('duration', 1))  # Duration state (1, 2, or 4 hours)
+        
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Convert to UTC timezone
+        utc_zone = pytz.UTC
+        date = datetime.combine(date, time.min, utc_zone)  # Start of the day in UTC
+
+        # Query the room bookings for that day in UTC
+        booked_times = RoomBooking.objects.filter(
+            room_id=room_id,
+            start_datetime__date=date.date(),
+        )
+
+        # Define available slots for the day in UTC
+        available_slots = []
+        for hour in range(24):
+            start = time(hour)
+            end = time(hour + duration) if (hour + duration) < 24 else time(23, 59)  # Adjust to 23:59
+
+            is_available = True
+
+            # Check if the slot overlaps with any booked time
+            for booking in booked_times:
+                if (start >= booking.start_datetime.time() and start < booking.end_datetime.time()) or \
+                   (end > booking.start_datetime.time() and end <= booking.end_datetime.time()) or \
+                   (start <= booking.start_datetime.time() and end >= booking.end_datetime.time()):
+                    is_available = False
+                    break
+
+            available_slots.append({"start": start.strftime("%H:%M"), "end": end.strftime("%H:%M"), "isAvailable": is_available})
+
+        return Response(available_slots)
