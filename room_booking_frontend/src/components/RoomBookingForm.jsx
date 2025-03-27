@@ -79,6 +79,8 @@ function RoomBookingForm() {
 	const handleAddUser = (user) => {
 		if (!selectedUsers.some((u) => u.id === user.id)) {
 			setSelectedUsers([...selectedUsers, user]);
+			setUserSearch("");
+			setUserSearchResults([]);
 		}
 	};
 
