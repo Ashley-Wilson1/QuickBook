@@ -14,5 +14,6 @@ urlpatterns = [
     path('members/user/search/', UserEmailSearchView.as_view(), name='user-email-search' ),
     path('members-auth/', include('rest_framework.urls')),
     path('room_booking/', include('room_booking.urls')),
-    path("chat/", include('chat.urls')),
+    path('notifications/', include('notifications.urls')),
+    path('chat/', include('chat.urls')),
 ]
