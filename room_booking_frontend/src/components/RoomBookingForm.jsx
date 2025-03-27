@@ -88,28 +88,42 @@ function RoomBookingForm() {
 
 	const handleTimeSlotSelect = (timeSlot) => {
 		const selectedDateTime = new Date(`${selectedDate.toISOString().split("T")[0]}T${timeSlot.start}:00Z`);
-
 		const endTime = new Date(selectedDateTime);
 		endTime.setHours(selectedDateTime.getHours() + duration);
 
-		const startUtcTime = selectedDateTime.toISOString();
-		const endUtcTime = endTime.toISOString();
+		// Find consecutive available slots that fit the required duration
+		let isAvailable = true;
+		let currentTime = new Date(selectedDateTime);
 
-		setStartDateTime(startUtcTime.slice(0, 16));
-		setEndDateTime(endUtcTime.slice(0, 16));
+		for (let i = 0; i < duration; i++) {
+			const currentHour = currentTime.toISOString().split("T")[1].slice(0, 5); // Extract "HH:MM"
+			if (!availableTimes.some((slot) => slot.start === currentHour)) {
+				isAvailable = false;
+				break;
+			}
+			currentTime.setHours(currentTime.getHours() + 1); // Move to next hour
+		}
 
+		if (!isAvailable) {
+			setError("Selected duration is not fully available.");
+			return;
+		}
+
+		setStartDateTime(selectedDateTime.toISOString().slice(0, 16));
+		setEndDateTime(endTime.toISOString().slice(0, 16));
 		setSelectedTimeSlot({ start: selectedDateTime, end: endTime });
+		setError(""); // Clear previous error
 	};
 
 	const isTimeSlotSelected = (timeSlot) => {
 		if (!selectedTimeSlot) return false;
 
+		// Convert the time slot start to a Date object
 		const timeSlotStart = new Date(`${selectedDate.toISOString().split("T")[0]}T${timeSlot.start}:00Z`);
-		const timeSlotEnd = new Date(`${selectedDate.toISOString().split("T")[0]}T${timeSlot.end}:00Z`);
 
-		return timeSlotStart.getTime() === selectedTimeSlot.start.getTime() && timeSlotEnd.getTime() === selectedTimeSlot.end.getTime();
+		// Check if the selected slot falls within the chosen duration range
+		return timeSlotStart >= selectedTimeSlot.start && timeSlotStart < selectedTimeSlot.end;
 	};
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
