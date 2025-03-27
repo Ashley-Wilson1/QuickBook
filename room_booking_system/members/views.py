@@ -45,6 +45,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         if response.status_code == 401:
             return Response({"error": "Incorrect password."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if response.status_code == 200:
+            user.is_online = True
+            user.save(update_fields=['is_online'])
+            
         return response
     
 class UserEmailSearchView(generics.ListAPIView):
