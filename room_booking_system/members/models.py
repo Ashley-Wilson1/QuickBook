@@ -4,9 +4,6 @@ from django.contrib.auth import models as auth_models
 # Custom User Manager
 class UserManager(auth_models.BaseUserManager):
     def create_user(self, email, username, password=None, user_type='student', **extra_fields):
-        """
-        Create and return a regular user with an email, username, and password.
-        """
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
@@ -16,9 +13,6 @@ class UserManager(auth_models.BaseUserManager):
         return user
 
     def create_superuser(self, email, username, password=None, **extra_fields):
-        """
-        Create and return a superuser with an email, username, and password.
-        """
         extra_fields.setdefault("user_type", "staff")
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
@@ -31,6 +25,7 @@ class User(auth_models.AbstractUser):
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
     email = models.EmailField(unique=True)
+    is_online = models.BooleanField(default=False)
 
     STUDENT = 'student'
     STAFF = 'staff'

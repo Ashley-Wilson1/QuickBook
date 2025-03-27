@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import User as CustomUser
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
@@ -56,3 +57,12 @@ class UserEmailSearchView(generics.ListAPIView):
         if email_query:
             return User.objects.filter(email__icontains=email_query)  
         return User.objects.none()  
+    
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        user.is_online = False
+        user.save(update_fields=['is_online'])
+        return Response({"message": "User logged out successfully"}, status=200)

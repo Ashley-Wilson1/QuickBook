@@ -21,12 +21,17 @@ function NavBar() {
 		fetchUser();
 	}, []);
 
-	const handleLogout = () => {
-		localStorage.removeItem(ACCESS_TOKEN, REFRESH_TOKEN);
+	const handleLogout = async () => {
+		try {
+			await api.post("/members/logout/");
 
-		navigate("/logout");
+			localStorage.removeItem(ACCESS_TOKEN);
+			localStorage.removeItem(REFRESH_TOKEN);
+			navigate("/login");
+		} catch (error) {
+			console.error("Logout failed", error);
+		}
 	};
-
 	return (
 		<nav className="navbar">
 			<div className="nav-left">
