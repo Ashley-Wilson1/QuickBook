@@ -9,6 +9,7 @@ from .serializers import RoomSerializer,RoomBookingSerializer,DetailedRoomBookin
 from rest_framework.permissions import IsAuthenticated, AllowAny,IsAdminUser
 from rest_framework import generics
 from django.conf import settings
+from django.core.mail import send_mail
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
@@ -33,6 +34,8 @@ class CreateBooking(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return RoomBooking.objects.filter(users=self.request.user)  # Show only the user's bookings
+
+    
 
     def perform_create(self, serializer):
         room_id = self.request.data.get("room_id")
@@ -73,12 +76,32 @@ class CreateBooking(generics.ListCreateAPIView):
                     message=f"A new booking for '{booking.purpose}' was created.",
                     notification_type='booking'
                 )
+
+            CreateBooking.send_booking_email(booking, users)
             print(f"Users added to booking: {[user.username for user in users]}")  # Debugging line
 
         except ValidationError as e:
             raise DRFValidationError({"error": e.message})
 
+    def send_booking_email(booking, users):
+        subject = f"New Booking: {booking.purpose}"
+        message = (
+            f"A new booking has been created:\n\n"
+            f"Room: {booking.room.number}\n"
+            f"Time: {booking.start_datetime.strftime('%Y-%m-%d %H:%M')} - {booking.end_datetime.strftime('%Y-%m-%d %H:%M')}\n"
+            f"Purpose: {booking.purpose}\n\n"
+            f"Log in to view more details."
+        )
+        recipient_list = [user.email for user in users if user.email]
 
+        if recipient_list:
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,  # From email
+                recipient_list,
+                fail_silently=False,
+            )
 class BookingDelete(generics.DestroyAPIView):
     serializer_class = RoomBookingSerializer
     permission_classes = [IsAuthenticated]
