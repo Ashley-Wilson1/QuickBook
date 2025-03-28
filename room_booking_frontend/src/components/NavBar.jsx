@@ -50,10 +50,15 @@ function NavBar() {
 
 	const markAsRead = async (id) => {
 		try {
-			await api.post(`/notifications/${id}/read/`);
-			setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, is_read: true } : notif)));
+			const response = await api.patch(`/notifications/${id}/read/`);
+
+			// Optionally, check if the response contains confirmation or data
+			if (response.status === 200) {
+				setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, is_read: true } : notif)));
+			}
 		} catch (error) {
 			console.error("Error marking notification as read:", error);
+			// Optionally provide user feedback here, e.g., show a toast
 		}
 	};
 	return (

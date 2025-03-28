@@ -4,12 +4,17 @@ from .models import Message
 from notifications.models import Notification
 
 @receiver(post_save, sender=Message)
-def send_chat_notification(sender, instance, created, **kwargs):
+def send_message_notification(sender, instance, created, **kwargs):
     if created:
-        chat_users = instance.booking.users.exclude(id=instance.sender.id)
-        for user in chat_users:
-            if not user.is_online:
-                Notification.objects.create(
-                    user=user,
-                    message=f"New message from {instance.sender.username} in '{instance.booking.purpose}'"
-                )
+        # Notify all users in the chat room except the sender
+        users = instance.booking.users.exclude(id=instance.user.id)  # Assuming 'room' is a field on Message
+
+        # Truncate message preview to the first 50 characters
+        message_preview = instance.text[:50] + ("..." if len(instance.text) > 50 else "")
+
+        for user in users:
+            Notification.objects.create(
+                user=user,
+                message=f"New message in Room {instance.booking.room.number} for {instance.booking.purpose}: {message_preview}",
+                notification_type='message'
+            )
