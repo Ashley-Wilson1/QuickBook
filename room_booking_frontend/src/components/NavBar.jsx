@@ -7,6 +7,8 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 function NavBar() {
 	const [user, setUser] = useState(null);
 	const navigate = useNavigate();
+	const [notifications, setNotifications] = useState([]);
+	const [showDropdown, setShowDropdown] = useState(false);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -18,7 +20,17 @@ function NavBar() {
 			}
 		};
 
+		const fetchNotifications = async () => {
+			try {
+				const res = await api.get("/notifications/user/");
+				setNotifications(res.data);
+			} catch (error) {
+				console.error("Error fetching notifications:", error);
+			}
+		};
+
 		fetchUser();
+		fetchNotifications();
 	}, []);
 
 	const handleLogout = async () => {
@@ -30,6 +42,18 @@ function NavBar() {
 			navigate("/login");
 		} catch (error) {
 			console.error("Logout failed", error);
+		}
+	};
+	const toggleDropdown = () => {
+		setShowDropdown(!showDropdown);
+	};
+
+	const markAsRead = async (id) => {
+		try {
+			await api.post(`/notifications/${id}/read/`);
+			setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, is_read: true } : notif)));
+		} catch (error) {
+			console.error("Error marking notification as read:", error);
 		}
 	};
 	return (
@@ -46,6 +70,26 @@ function NavBar() {
 			<div className="nav-right">
 				{user ? (
 					<>
+						<div className="nav-notifications">
+							<button onClick={toggleDropdown} className="notif-button">
+								{notifications.filter((n) => !n.is_read).length} 🔔
+							</button>
+							{showDropdown && (
+								<div className="notif-dropdown">
+									{notifications.length === 0 ? (
+										<p>No notifications</p>
+									) : (
+										<ul>
+											{notifications.map((notif) => (
+												<li key={notif.id} className={notif.is_read ? "read" : "unread"} onClick={() => markAsRead(notif.id)}>
+													{notif.message}
+												</li>
+											))}
+										</ul>
+									)}
+								</div>
+							)}
+						</div>
 						<span className="nav-user">{user.first_name || user.username}</span>
 						<button onClick={handleLogout} className="nav-button">
 							Logout

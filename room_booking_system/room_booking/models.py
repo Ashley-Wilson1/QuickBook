@@ -36,6 +36,7 @@ class RoomBooking(models.Model):
     def save(self, *args, **kwargs):
         self.clean()  # Run validation before saving
         super().save(*args, **kwargs)
+        
 
     def __str__(self):
         #user_name = self.user.username if self.user.username else self.user.email

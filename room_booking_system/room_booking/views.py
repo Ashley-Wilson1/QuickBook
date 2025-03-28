@@ -21,6 +21,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime, time
 from .models import RoomBooking
+from notifications.models import Notification
 import pytz
 
 User = get_user_model()
@@ -34,7 +35,7 @@ class CreateBooking(generics.ListCreateAPIView):
         return RoomBooking.objects.filter(users=self.request.user)  # Show only the user's bookings
 
     def perform_create(self, serializer):
-        room_id = self.request.data.get("room_id")  
+        room_id = self.request.data.get("room_id")
         start_datetime = self.request.data.get("start_datetime")
         end_datetime = self.request.data.get("end_datetime")
         user_ids = self.request.data.get("users", [])
@@ -45,25 +46,35 @@ class CreateBooking(generics.ListCreateAPIView):
             user_ids.append(self.request.user.id)
 
         users = User.objects.filter(id__in=user_ids)
-        
+
         start_datetime = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")
         end_datetime = datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")
 
-        # Convert the naive datetime object to a timezone-aware datetime object in UTC using pytz
+        # Convert to timezone-aware datetimes
         start_datetime = timezone.make_aware(start_datetime, pytz.utc)
         end_datetime = timezone.make_aware(end_datetime, pytz.utc)
 
+        # Create the RoomBooking instance
         booking = RoomBooking(
             room=requested_room,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
-            purpose = purpose,
+            purpose=purpose,
         )
-            
 
         try:
+            # Save the booking and associate the users
             booking.save()
             booking.users.set(users)
+            
+            for user in users:
+                Notification.objects.create(
+                    user=user,
+                    message=f"A new booking for '{booking.purpose}' was created.",
+                    notification_type='booking'
+                )
+            print(f"Users added to booking: {[user.username for user in users]}")  # Debugging line
+
         except ValidationError as e:
             raise DRFValidationError({"error": e.message})
 
