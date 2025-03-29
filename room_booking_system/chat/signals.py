@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Message
 from notifications.models import Notification
-from notifications.views import SendNotifications
+from notifications.tasks import send_offline_message_email
 
 @receiver(post_save, sender=Message)
 def send_message_notification(sender, instance, created, **kwargs):
@@ -22,4 +22,4 @@ def send_message_notification(sender, instance, created, **kwargs):
                 notification_type='message'
             )
 
-        SendNotifications.send_offline_message_email(instance, offline_users, message_preview)
+        send_offline_message_email.delay(instance.id, list(offline_users.values_list("id", flat=True)), message_preview)

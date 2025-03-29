@@ -22,7 +22,7 @@ from rest_framework import status
 from datetime import datetime, time
 from .models import RoomBooking
 from notifications.models import Notification
-from notifications.views import SendNotifications
+from notifications.tasks import send_booking_email
 import pytz
 
 User = get_user_model()
@@ -77,7 +77,7 @@ class CreateBooking(generics.ListCreateAPIView):
                     notification_type='booking'
                 )
 
-            SendNotifications.send_booking_email(booking, users)
+            send_booking_email(booking, users)
             print(f"Users added to booking: {[user.username for user in users]}")  # Debugging line
 
         except ValidationError as e:
