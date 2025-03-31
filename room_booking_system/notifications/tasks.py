@@ -1,6 +1,8 @@
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils.timezone import now, timedelta
+
 
 @shared_task
 def send_booking_email(booking_id, user_ids): 
@@ -61,3 +63,46 @@ def send_offline_message_email(message_id, user_ids, message_preview):
             recipient_list,
             fail_silently=False,
         )
+
+@shared_task
+def send_booking_reminders():
+    from room_booking.models import RoomBooking
+    
+    current_time = now()
+
+    one_hour_start = current_time + timedelta(minutes=45)  
+    one_hour_end = current_time + timedelta(minutes=75)    
+
+    one_day_start = current_time + timedelta(hours=22.5)   
+    one_day_end = current_time + timedelta(hours=25.5)     
+
+    # Find bookings that start within these windows
+    one_hour_bookings = RoomBooking.objects.filter(
+        start_datetime__range=(one_hour_start, one_hour_end)
+    )
+
+    one_day_bookings = RoomBooking.objects.filter(
+        start_datetime__range=(one_day_start, one_day_end)
+    )
+
+    for booking in one_hour_bookings | one_day_bookings:
+        users = booking.users.all()  
+        recipient_list = [user.email for user in users if user.email]
+
+        if recipient_list:
+            time_label = "1 hour" if booking in one_hour_bookings else "1 day"
+            subject = f"Reminder: Booking in {time_label}"
+            message = (
+                f"Your booking for room {booking.room.number} is happening in {time_label}.\n"
+                f"Time: {booking.start_datetime.strftime('%Y-%m-%d %H:%M')}\n"
+                f"Purpose: {booking.purpose}\n\n"
+                f"Log in to view more details."
+            )
+
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                recipient_list,
+                fail_silently=False,
+            )
