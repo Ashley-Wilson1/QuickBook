@@ -1,10 +1,8 @@
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from .models import Notification
 from .serializers import NotificationSerializer
-from django.conf import settings
 
 
 

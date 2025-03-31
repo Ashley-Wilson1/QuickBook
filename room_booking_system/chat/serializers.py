@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Message
-from members.models import User  
 
 class MessageSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()  

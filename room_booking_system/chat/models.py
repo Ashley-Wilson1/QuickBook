@@ -1,5 +1,4 @@
 from django.db import models
-#from django.contrib.auth import get_user_model
 from members.models import User
 from room_booking.models import RoomBooking  
 

@@ -1,26 +1,15 @@
-from django.forms import ValidationError
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, FormView,DetailView,CreateView
-from .models import Room, RoomBooking
-from .forms import AvailabilityForm
-from django.contrib import messages
-from .serializers import RoomSerializer,RoomBookingSerializer,DetailedRoomBookingSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny,IsAdminUser
-from rest_framework import generics
-from django.conf import settings
-from rest_framework.exceptions import ValidationError as DRFValidationError
-from django.contrib.auth import get_user_model
-from rest_framework.views import APIView
-from datetime import datetime, time
-from rest_framework import status
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
-import pytz
-from rest_framework.views import APIView
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError as DRFValidationError
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView
 from datetime import datetime, time
-from .models import RoomBooking
+from .models import Room, RoomBooking
+from .serializers import RoomSerializer, RoomBookingSerializer, DetailedRoomBookingSerializer
 from notifications.models import Notification
 from notifications.tasks import send_booking_email
 import pytz
