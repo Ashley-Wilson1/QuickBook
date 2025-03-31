@@ -29,6 +29,21 @@
 	color: #333;
 }
 
+.cancel-button {
+	background-color: #d9534f;
+	color: white;
+	border: none;
+	padding: 10px 15px;
+	font-size: 16px;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cancel-button:hover {
+	background-color: #c9302c;
+}
+
 .chat-box {
 	margin-top: 30px;
 	background-color: #f4f4f4;

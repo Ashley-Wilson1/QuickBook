@@ -83,14 +83,22 @@ class CreateBooking(generics.ListCreateAPIView):
         except ValidationError as e:
             raise DRFValidationError({"error": e.message})
 
-
-
 class BookingDelete(generics.DestroyAPIView):
     serializer_class = RoomBookingSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return RoomBooking.objects.filter(user=self.request.user)  # Show only the user's bookings
+        return RoomBooking.objects.filter(users=self.request.user)  # Allow any user in the booking to delete it
+
+    def delete(self, request, *args, **kwargs):
+        booking = get_object_or_404(RoomBooking, pk=kwargs["pk"])
+
+        # Ensure the authenticated user is part of the booking
+        if request.user not in booking.users.all():
+            return Response({"error": "You are not authorized to cancel this booking."}, status=403)
+
+        return super().delete(request, *args, **kwargs)
+
 
 class RoomCreate(generics.CreateAPIView):
     queryset = Room.objects.all()
