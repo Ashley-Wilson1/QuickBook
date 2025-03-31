@@ -236,6 +236,14 @@ function RoomBookingForm() {
 				{error && <p className="error-message">{error}</p>}
 				{success && <p style={{ color: "green" }}>{success}</p>}
 				<form onSubmit={handleSubmit}>
+					<label>Select Date:</label>
+					<input
+						type="date"
+						value={selectedDate.toISOString().split("T")[0]}
+						onChange={(e) => setSelectedDate(new Date(e.target.value))}
+						required
+					/>
+
 					<label>Room:</label>
 					<select value={room} onChange={(e) => setRoom(e.target.value)} required>
 						<option value="">Select a room</option>
@@ -245,14 +253,6 @@ function RoomBookingForm() {
 							</option>
 						))}
 					</select>
-
-					<label>Select Date:</label>
-					<input
-						type="date"
-						value={selectedDate.toISOString().split("T")[0]}
-						onChange={(e) => setSelectedDate(new Date(e.target.value))}
-						required
-					/>
 
 					<label>Duration:</label>
 					<select value={duration} onChange={(e) => setDuration(Number(e.target.value))} required>
