@@ -1,7 +1,7 @@
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now, timedelta, localtime
 
 
 @shared_task
@@ -68,10 +68,10 @@ def send_offline_message_email(message_id, user_ids, message_preview):
 def send_booking_reminders():
     from room_booking.models import RoomBooking
     
-    current_time = now()
+    current_time = localtime(now())
 
-    one_hour_start = current_time + timedelta(minutes=45)  
-    one_hour_end = current_time + timedelta(minutes=75)    
+    one_hour_start = current_time + timedelta(minutes=30)  
+    one_hour_end = current_time + timedelta(minutes=90)    
 
     one_day_start = current_time + timedelta(hours=22.5)   
     one_day_end = current_time + timedelta(hours=25.5)     
