@@ -1,10 +1,16 @@
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
+@shared_task
+def send_booking_email(booking_id, user_ids): 
+    from room_booking.models import RoomBooking
+    from django.contrib.auth import get_user_model
 
-def send_booking_email(booking, users): 
+    booking = RoomBooking.objects.get(id=booking_id)
+    User = get_user_model()
+    users = User.objects.filter(id__in=user_ids)
+
     subject = f"New Booking: {booking.purpose}"
     message = (
         f"A new booking has been created:\n\n"
@@ -27,6 +33,7 @@ def send_booking_email(booking, users):
 @shared_task
 def send_offline_message_email(message_id, user_ids, message_preview):
     from chat.models import Message
+    from django.contrib.auth import get_user_model
 
     if not user_ids:
         return  

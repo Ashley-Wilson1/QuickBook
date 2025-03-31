@@ -66,7 +66,7 @@ class CreateBooking(generics.ListCreateAPIView):
                     notification_type='booking'
                 )
 
-            send_booking_email(booking, users)
+            send_booking_email.delay(booking.id, [user.id for user in users])
             print(f"Users added to booking: {[user.username for user in users]}")  # Debugging line
 
         except ValidationError as e:
