@@ -2,9 +2,6 @@ from django.db import models
 from members.models import User
 from room_booking.models import RoomBooking  
 
-
-
-
 class Message(models.Model):
     booking = models.ForeignKey(RoomBooking, on_delete=models.CASCADE, related_name="messages")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
