@@ -38,13 +38,10 @@ class CreateBooking(generics.ListCreateAPIView):
             user_ids.append(self.request.user.id)
 
         users = User.objects.filter(id__in=user_ids)
-
-        start_datetime = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")
-        end_datetime = datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")
-
-        # Convert to timezone-aware datetimes
-        start_datetime = timezone.make_aware(start_datetime, pytz.utc)
-        end_datetime = timezone.make_aware(end_datetime, pytz.utc)
+        # Convert the incoming datetime strings into timezone-aware datetimes
+        local_tz = pytz.timezone("Europe/London")  
+        start_datetime = local_tz.localize(datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")).astimezone(pytz.UTC)
+        end_datetime = local_tz.localize(datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")).astimezone(pytz.UTC)
 
         # Create the RoomBooking instance
         booking = RoomBooking(
@@ -127,6 +124,8 @@ class BookingDetailView(APIView):
         return Response(serializer.data)
     
 
+from django.utils.timezone import localtime
+
 class AvailableTimesView(APIView):
     def get(self, request, *args, **kwargs):
         room_id = request.query_params.get('room_id')
@@ -138,17 +137,21 @@ class AvailableTimesView(APIView):
         except ValueError:
             return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Convert to UTC timezone
-        utc_zone = pytz.UTC
-        date = datetime.combine(date, time.min, utc_zone)  # Start of the day in UTC
-
-        # Query the room bookings for that day in UTC
         booked_times = RoomBooking.objects.filter(
             room_id=room_id,
-            start_datetime__date=date.date(),
+            start_datetime__date=date
         )
 
-        # Define available slots for the day in UTC
+        local_tz = pytz.timezone("Europe/London")
+
+        booked_slots = [
+            {
+                "start": localtime(booking.start_datetime).strftime("%H:%M"),
+                "end": localtime(booking.end_datetime).strftime("%H:%M"),
+            }
+            for booking in booked_times
+        ]
+
         available_slots = []
         for hour in range(24):
             start = time(hour)
@@ -157,13 +160,20 @@ class AvailableTimesView(APIView):
             is_available = True
 
             # Check if the slot overlaps with any booked time
-            for booking in booked_times:
-                if (start >= booking.start_datetime.time() and start < booking.end_datetime.time()) or \
-                   (end > booking.start_datetime.time() and end <= booking.end_datetime.time()) or \
-                   (start <= booking.start_datetime.time() and end >= booking.end_datetime.time()):
+            for slot in booked_slots:
+                slot_start = datetime.strptime(slot["start"], "%H:%M").time()
+                slot_end = datetime.strptime(slot["end"], "%H:%M").time()
+
+                if (start >= slot_start and start < slot_end) or \
+                   (end > slot_start and end <= slot_end) or \
+                   (start <= slot_start and end >= slot_end):
                     is_available = False
                     break
 
-            available_slots.append({"start": start.strftime("%H:%M"), "end": end.strftime("%H:%M"), "isAvailable": is_available})
+            available_slots.append({
+                "start": start.strftime("%H:%M"),
+                "end": end.strftime("%H:%M"),
+                "isAvailable": is_available
+            })
 
         return Response(available_slots)

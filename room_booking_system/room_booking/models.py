@@ -39,8 +39,8 @@ class RoomBooking(models.Model):
         
 
     def __str__(self):
-        #user_name = self.user.username if self.user.username else self.user.email
-        start_time = localtime(self.start_datetime).strftime('%Y-%m-%d %H:%M')  # Format without +00:00
+        # Convert to local time zone
+        start_time = localtime(self.start_datetime).strftime('%Y-%m-%d %H:%M')
         end_time = localtime(self.end_datetime).strftime('%Y-%m-%d %H:%M')
         return f"Room {self.room.number} booked from {start_time} to {end_time}"
 

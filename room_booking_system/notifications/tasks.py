@@ -2,6 +2,7 @@ from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.timezone import now, timedelta, localtime
+from django.utils import timezone
 
 
 @shared_task
@@ -67,14 +68,15 @@ def send_offline_message_email(message_id, user_ids, message_preview):
 @shared_task
 def send_booking_reminders():
     from room_booking.models import RoomBooking
-    
-    current_time = localtime(now())
 
-    one_hour_start = current_time + timedelta(minutes=30)  
-    one_hour_end = current_time + timedelta(minutes=90)    
+    current_time = timezone.now()  
 
-    one_day_start = current_time + timedelta(hours=22.5)   
-    one_day_end = current_time + timedelta(hours=25.5)     
+    one_hour_start = current_time + timedelta(minutes=30)  # 30 minutes from now
+    one_hour_end = current_time + timedelta(hours=1.5)  # 1.5 hours from now
+
+    # 1-day reminder window
+    one_day_start = current_time + timedelta(hours=22.5)   # 1 day from now
+    one_day_end = current_time + timedelta(hours=25.5)     # 1 day + 3 hours
 
     # Find bookings that start within these windows
     one_hour_bookings = RoomBooking.objects.filter(
@@ -86,7 +88,7 @@ def send_booking_reminders():
     )
 
     for booking in one_hour_bookings | one_day_bookings:
-        users = booking.users.all()  
+        users = booking.users.all()
         recipient_list = [user.email for user in users if user.email]
 
         if recipient_list:
@@ -94,7 +96,7 @@ def send_booking_reminders():
             subject = f"Reminder: Booking in {time_label}"
             message = (
                 f"Your booking for room {booking.room.number} is happening in {time_label}.\n"
-                f"Time: {booking.start_datetime.strftime('%Y-%m-%d %H:%M')}\n"
+                f"Time: {localtime(booking.start_datetime).strftime('%Y-%m-%d %H:%M')}\n"
                 f"Purpose: {booking.purpose}\n\n"
                 f"Log in to view more details."
             )
