@@ -1,0 +1,23 @@
+# Use official Python image
+FROM python:3.12.9
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory inside container
+WORKDIR /app
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire project
+COPY . .
+
+# Expose port 
+EXPOSE 8000
+
+# Default command to start the app
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "room_booking_system.wsgi:application"]
