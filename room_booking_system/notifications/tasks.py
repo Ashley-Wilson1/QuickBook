@@ -18,7 +18,7 @@ def send_booking_email(booking_id, user_ids):
     message = (
         f"A new booking has been created:\n\n"
         f"Room: {booking.room.number}\n"
-        f"Time: {booking.start_datetime.strftime('%Y-%m-%d %H:%M')} - {booking.end_datetime.strftime('%Y-%m-%d %H:%M')}\n"
+        f"Time: {localtime(booking.start_datetime).strftime('%Y-%m-%d %H:%M')} - {localtime(booking.end_datetime).strftime('%Y-%m-%d %H:%M')}\n"
         f"Purpose: {booking.purpose}\n\n"
         f"Log in to view more details."
     )
