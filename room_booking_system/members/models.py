@@ -26,7 +26,7 @@ class User(auth_models.AbstractUser):
     last_name = models.CharField(max_length=150, blank=True)
     email = models.EmailField(unique=True)
     is_online = models.BooleanField(default=False)
-
+    verified = models.BooleanField(default=False)
     STUDENT = 'student'
     STAFF = 'staff'
 
