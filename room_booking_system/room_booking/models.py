@@ -7,11 +7,12 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Room(models.Model):  # Automatic pk given
-    number = models.IntegerField(unique=True)
+    number = models.IntegerField()
     capacity = models.IntegerField()
+    building = models.CharField(max_length=255, default="James Graham")
 
     def __str__(self):
-        return f"Room {self.number} (Capacity: {self.capacity})"
+        return f"Room {self.number} in {self.building} (Capacity: {self.capacity})"
 
 class RoomBooking(models.Model):
     start_datetime = models.DateTimeField()

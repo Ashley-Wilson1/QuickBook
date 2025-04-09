@@ -7,29 +7,34 @@ services:
       env_file:
          - .env
       environment:
-         POSTGRES_USER: ${POSTGRES_USER}
-         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-         POSTGRES_DB: ${POSTGRES_DB}
+         POSTGRES_USER: ${DB_USER}
+         POSTGRES_PASSWORD: ${DB_PASSWORD}
+         POSTGRES_DB: ${DB_NAME}
       ports:
-         - "5432:5432"
+         - "5432:5432" # Expose the database to the host
       volumes:
          - postgres_data:/var/lib/postgresql/data
 
    backend:
       build: ./room_booking_system
       container_name: backend
-      volumes:
-         - ./room_booking_system:/app
-      ports:
-         - "8000:8000"
-      depends_on:
-         - redis
       environment:
+         - DB_HOST=db # Set the database host to the Docker service name
+         - DB_USER=${DB_USER}
+         - DB_PASSWORD=${DB_PASSWORD}
+         - DB_NAME=${DB_NAME}
+         - DB_PORT=5432
+         - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+         - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
          - CELERY_BROKER_URL=redis://redis:6379/0
          - CELERY_RESULT_BACKEND=redis://redis:6379/0
          - DJANGO_SETTINGS_MODULE=room_booking_system.settings
-      command: ["gunicorn", "--bind", "0.0.0.0:8000", "room_booking_system.wsgi:application"]
 
+      ports:
+         - "8000:8000"
+      depends_on:
+         - db
+         - redis
    frontend:
       build:
          context: ./room_booking_frontend
@@ -55,6 +60,8 @@ services:
       volumes:
          - ./room_booking_system:/app
       environment:
+         - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+         - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
          - CELERY_BROKER_URL=redis://redis:6379/0
          - CELERY_RESULT_BACKEND=redis://redis:6379/0
          - DJANGO_SETTINGS_MODULE=room_booking_system.settings
