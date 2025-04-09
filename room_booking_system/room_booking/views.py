@@ -13,6 +13,8 @@ from .serializers import RoomSerializer, RoomBookingSerializer, DetailedRoomBook
 from notifications.models import Notification
 from notifications.tasks import send_booking_email
 import pytz
+from rest_framework.exceptions import PermissionDenied
+
 
 User = get_user_model()
 
@@ -33,6 +35,9 @@ class CreateBooking(generics.ListCreateAPIView):
         user_ids = self.request.data.get("users", [])
         purpose = self.request.data.get("purpose", "")
         requested_room = get_object_or_404(Room, id=room_id)  # Ensure the room exists
+
+        if not self.request.user.verified:
+            raise PermissionDenied("You must be verified by an admin to book a room.")
 
         if self.request.user.id not in user_ids:
             user_ids.append(self.request.user.id)

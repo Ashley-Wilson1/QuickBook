@@ -57,14 +57,19 @@ services:
       depends_on:
          - backend
          - redis
+         - db
       volumes:
          - ./room_booking_system:/app
       environment:
+         - DB_HOST=db # Set the database host to the Docker service name
+         - DB_USER=${DB_USER}
+         - DB_PASSWORD=${DB_PASSWORD}
+         - DB_NAME=${DB_NAME}
+         - DB_PORT=5432
          - EMAIL_HOST_USER=${EMAIL_HOST_USER}
          - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
          - CELERY_BROKER_URL=redis://redis:6379/0
          - CELERY_RESULT_BACKEND=redis://redis:6379/0
-         - DJANGO_SETTINGS_MODULE=room_booking_system.settings
       command: ["celery", "-A", "room_booking_system", "worker", "--loglevel=info"]
 
 volumes:
