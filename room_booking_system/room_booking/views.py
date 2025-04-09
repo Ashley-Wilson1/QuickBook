@@ -16,6 +16,7 @@ import pytz
 from rest_framework.exceptions import PermissionDenied
 
 
+
 User = get_user_model()
 
 class CreateBooking(generics.ListCreateAPIView):
@@ -182,3 +183,21 @@ class AvailableTimesView(APIView):
             })
 
         return Response(available_slots)
+
+class BuildingListView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        buildings = Room.objects.values_list('building', flat=True).distinct()
+        return Response(buildings)
+    
+class RoomListByBuildingView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        building = request.query_params.get("building")
+        if not building:
+            return Response({"error": "Building parameter is required."}, status=400)
+
+        rooms = Room.objects.filter(building=building).values("id", "number", "capacity")
+        return Response(rooms)

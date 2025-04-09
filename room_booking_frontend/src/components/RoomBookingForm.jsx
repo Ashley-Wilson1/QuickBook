@@ -6,7 +6,7 @@ import "react-calendar/dist/Calendar.css";
 
 function RoomBookingForm() {
 	const [rooms, setRooms] = useState([]);
-	const [room, setRoom] = useState("");
+	const [selectedRoom, setSelectedRoom] = useState("");
 	const [startDateTime, setStartDateTime] = useState("");
 	const [endDateTime, setEndDateTime] = useState("");
 	const [duration, setDuration] = useState(1);
@@ -20,6 +20,8 @@ function RoomBookingForm() {
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [availableTimes, setAvailableTimes] = useState([]);
 	const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+	const [buildings, setBuildings] = useState([]);
+	const [selectedBuilding, setSelectedBuilding] = useState("");
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -34,24 +36,38 @@ function RoomBookingForm() {
 		fetchUser();
 	}, []);
 
+	// Fetch buildings on component mount
 	useEffect(() => {
-		const fetchRooms = async () => {
-			try {
-				const res = await api.get("/room_booking/rooms/");
-				setRooms(res.data);
-			} catch (error) {
-				console.error("Error fetching rooms:", error);
-			}
-		};
-
-		fetchRooms();
+		api.get("/room_booking/buildings/")
+			.then((response) => setBuildings(response.data))
+			.catch((error) => console.error("Error fetching buildings:", error));
 	}, []);
+
+	// Fetch rooms when a building is selected
+	useEffect(() => {
+		if (selectedBuilding) {
+			api.get(`/room_booking/rooms/?building=${selectedBuilding}`)
+				.then((response) => setRooms(response.data))
+				.catch((error) => console.error("Error fetching rooms:", error));
+		} else {
+			setRooms([]); // Clear rooms if no building is selected
+		}
+	}, [selectedBuilding]);
+
+	const handleBuildingChange = (e) => {
+		setSelectedBuilding(e.target.value);
+		setSelectedRoom(""); // Reset the selected room when building changes
+	};
+
+	const handleRoomChange = (e) => {
+		setSelectedRoom(e.target.value);
+	};
 
 	useEffect(() => {
 		const fetchAvailableTimes = async () => {
-			if (room && selectedDate) {
+			if (selectedRoom && selectedDate) {
 				try {
-					const res = await api.get(`/room_booking/available_times/?room_id=${room}&date=${selectedDate.toISOString().split("T")[0]}`);
+					const res = await api.get(`/room_booking/available_times/?room_id=${selectedRoom}&date=${selectedDate.toISOString().split("T")[0]}`);
 					setAvailableTimes(res.data);
 				} catch (error) {
 					console.error("Error fetching available times:", error);
@@ -60,7 +76,7 @@ function RoomBookingForm() {
 		};
 
 		fetchAvailableTimes();
-	}, [room, selectedDate]);
+	}, [selectedRoom, selectedDate]);
 
 	const handleUserSearch = async (e) => {
 		setUserSearch(e.target.value);
@@ -131,7 +147,7 @@ function RoomBookingForm() {
 		setError("");
 		setSuccess("");
 
-		if (!room || !startDateTime || !endDateTime || !purpose) {
+		if (!selectedRoom || !startDateTime || !endDateTime || !purpose) {
 			setError("All fields are required.");
 			return;
 		}
@@ -146,7 +162,7 @@ function RoomBookingForm() {
 		const usersToSubmit = [loggedInUserId, ...selectedUsers.map((user) => user.id)];
 
 		console.log("Request Data:", {
-			room_id: room,
+			room_id: selectedRoom,
 			start_datetime: startDateTime,
 			end_datetime: endDateTime,
 			users: usersToSubmit,
@@ -155,7 +171,7 @@ function RoomBookingForm() {
 
 		try {
 			const res = await api.post("/room_booking/bookings/", {
-				room_id: room,
+				room_id: selectedRoom,
 				start_datetime: startDateTime,
 				end_datetime: endDateTime,
 				users: usersToSubmit,
@@ -163,7 +179,7 @@ function RoomBookingForm() {
 			});
 
 			setSuccess("Booking created successfully!");
-			setRoom("");
+			setSelectedRoom("");
 			setStartDateTime("");
 			setEndDateTime("");
 			setPurpose("");
@@ -243,13 +259,23 @@ function RoomBookingForm() {
 						onChange={(e) => setSelectedDate(new Date(e.target.value))}
 						required
 					/>
-
-					<label>Room:</label>
-					<select value={room} onChange={(e) => setRoom(e.target.value)} required>
+					{/* Building Dropdown */}
+					<label htmlFor="building">Building</label>
+					<select id="building" value={selectedBuilding} onChange={handleBuildingChange}>
+						<option value="">Select a building</option>
+						{buildings.map((building, index) => (
+							<option key={index} value={building}>
+								{building}
+							</option>
+						))}
+					</select>
+					{/* Room Dropdown */}
+					<label htmlFor="room">Room</label>
+					<select id="room" value={selectedRoom} onChange={handleRoomChange} disabled={!selectedBuilding}>
 						<option value="">Select a room</option>
-						{rooms.map((r) => (
-							<option key={r.id} value={r.id}>
-								Room {r.number} (Capacity: {r.capacity})
+						{rooms.map((room) => (
+							<option key={room.id} value={room.id}>
+								Room {room.number} (Capacity: {room.capacity})
 							</option>
 						))}
 					</select>
