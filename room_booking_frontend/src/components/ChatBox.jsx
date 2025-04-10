@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ChatLog from "./ChatLog";
 import api from "../api";
+
 function ChatBox({ bookingId }) {
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
@@ -22,8 +23,8 @@ function ChatBox({ bookingId }) {
 			const response = await api.post(`/chat/bookings/${bookingId}/messages/send/`, {
 				text: newMessage,
 			});
-			setMessages([...messages, response.data]); // Append new message to chat log
-			setNewMessage(""); // Clear input field
+			setMessages([...messages, response.data]);
+			setNewMessage("");
 		} catch (error) {
 			console.error("Error sending message:", error);
 		}

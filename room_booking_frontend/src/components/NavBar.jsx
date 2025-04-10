@@ -3,6 +3,7 @@ import api from "../api";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/NavBar.css";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import leedsLogo from "../assets/whitelogo.png";
 
 function NavBar() {
 	const [user, setUser] = useState(null);
@@ -52,19 +53,18 @@ function NavBar() {
 		try {
 			const response = await api.patch(`/notifications/${id}/read/`);
 
-			// Optionally, check if the response contains confirmation or data
 			if (response.status === 200) {
 				setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, is_read: true } : notif)));
 			}
 		} catch (error) {
 			console.error("Error marking notification as read:", error);
-			// Optionally provide user feedback here, e.g., show a toast
 		}
 	};
 	return (
 		<nav className="navbar">
 			<div className="nav-left">
 				<Link to="/" className="nav-logo">
+					<img src={leedsLogo} alt="Leeds Beckett Logo" style={{ height: "40px" }} />
 					QuickBook
 				</Link>
 				<Link to="/RoomBooking" className="nav-link">

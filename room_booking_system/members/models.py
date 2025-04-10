@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import models as auth_models
 
-# Custom User Manager
 class UserManager(auth_models.BaseUserManager):
     def create_user(self, email, username, password=None, user_type='student', **extra_fields):
         if not email:
@@ -19,7 +18,6 @@ class UserManager(auth_models.BaseUserManager):
 
         return self.create_user(email, username, password, **extra_fields)
 
-# Custom User Model
 class User(auth_models.AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150, blank=True)
@@ -41,10 +39,9 @@ class User(auth_models.AbstractUser):
         default=STUDENT
     )
 
-    # Custom fields
     REQUIRED_FIELDS = [ "email", "user_type"]
 
-    objects = UserManager()  # Attach custom manager to the user model
+    objects = UserManager()  
 
     def is_student(self):
         return self.user_type == self.STUDENT

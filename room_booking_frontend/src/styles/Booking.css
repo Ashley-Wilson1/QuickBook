@@ -1,165 +1,83 @@
 .room-booking-container {
 	display: flex;
-	justify-content: space-between;
-	gap: 20px;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 30px;
 	padding: 20px;
-	flex-wrap: wrap;
+	background-color: #f5f5f5;
+	min-height: 100vh;
 }
 
-.room-booking-form,
-.timeline-container {
-	width: 45%;
-	padding: 1rem;
-	border: 1px solid #ddd;
+.room-booking-form {
+	background-color: white;
+	padding: 30px;
 	border-radius: 8px;
-	background-color: #f9f9f9;
-}
-
-@media (max-width: 768px) {
-	.room-booking-container {
-		flex-direction: column;
-		align-items: center;
-	}
-
-	.room-booking-form,
-	.timeline-container {
-		width: 90%;
-	}
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+	width: 400px;
 }
 
 .room-booking-form h2 {
+	color: #4b2c82;
 	font-size: 24px;
 	margin-bottom: 20px;
-	color: #444;
-}
-
-.error-message {
-	color: red;
-	font-size: 14px;
-	margin-bottom: 10px;
-}
-
-.success-message {
-	color: green;
-	font-size: 14px;
-	margin-bottom: 10px;
+	text-align: center;
 }
 
 .room-booking-form label {
 	display: block;
-	font-weight: bold;
-	margin-top: 20px;
 	margin-bottom: 5px;
-	color: #555;
+	font-weight: bold;
+	color: #333;
 }
 
-.room-booking-form select,
 .room-booking-form input,
-.room-booking-form button {
+.room-booking-form select {
 	width: 100%;
 	padding: 10px;
-	margin-bottom: 10px;
+	margin-bottom: 15px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 16px;
 	box-sizing: border-box;
 }
 
-.room-booking-form select:focus,
 .room-booking-form input:focus,
-.room-booking-form button:focus {
+.room-booking-form select:focus {
 	outline: none;
-	border-color: #007bff;
+	border-color: #4b2c82;
 }
 
-.purpose {
-	width: 100%;
-	padding: 8px;
-	margin-top: 10px;
-}
-
-.purpose:focus {
-	border-color: #007bff;
-}
-
-/* Button */
 .room-booking-form button {
-	background-color: #007bff;
+	width: 100%;
+	background-color: #4b2c82;
 	color: white;
-	font-weight: bold;
-	cursor: pointer;
+	padding: 12px;
 	border: none;
 	border-radius: 4px;
-	padding: 10px;
-	margin-top: 20px;
-	transition: background-color 0.3s;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .room-booking-form button:hover {
-	background-color: #0056b3;
+	background-color: #3a2266;
+	transform: scale(1.05);
 }
 
-/* User Search */
-.user-search-results {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+.timeline-container {
+	flex: 1;
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.user-search-result {
-	padding: 10px;
-	cursor: pointer;
-	border: 1px solid #ddd;
-	transition: background-color 0.3s;
-}
-
-.user-search-result:hover {
-	background-color: #f1f1f1;
-}
-
-/* Selected Users */
-.selected-users {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-.selected-users li {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	margin-top: 5px;
-	height: 30px;
-	background-color: #f9f9f9;
-}
-
-.selected-users button {
-	background-color: #e53e3e;
-	color: white;
-	border: none;
-	margin: 0;
-	align-items: center;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 12px;
-	padding: 5px 20px;
-	width: fit-content;
-	transition: background-color 0.3s;
-}
-
-.selected-users button:hover {
-	background-color: #c53030;
-}
-
-/* Timeline */
-.timeline-header {
-	font-size: 1.2rem;
-	margin-bottom: 1rem;
+.timeline-header h3 {
+	color: #4b2c82;
+	font-size: 20px;
+	margin-bottom: 10px;
 	text-align: center;
-	font-weight: bold;
 }
 
 .timeline {
@@ -170,31 +88,106 @@
 }
 
 .time-slot {
-	padding: 10px;
-	width: 100%;
-	text-align: center;
-	background-color: #e0e0e0;
-	border-radius: 5px;
+	padding: 10px 15px;
+	border-radius: 4px;
+	color: white;
 	cursor: pointer;
-	transition: background-color 0.3s;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+	width: 80%;
+	text-align: center;
 }
 
 .time-slot.available {
-	background-color: #c8e6c9;
+	background-color: #28a745;
+}
+
+.time-slot.available:hover {
+	background-color: #218838;
+	transform: scale(1.05);
 }
 
 .time-slot.booked {
-	background-color: #ffcdd2;
+	background-color: #dc3545;
 	cursor: not-allowed;
 }
 
 .time-slot.selected {
-	background-color: #115ba0;
-	color: white;
-	font-weight: bold;
-	border: 2px solid #0d26b3;
+	background-color: #ffc107;
+	color: black;
 }
 
-.time-slot:hover:not(.booked) {
-	background-color: #b0b0b0;
+@media (max-width: 768px) {
+	.room-booking-container {
+		flex-direction: column;
+	}
+
+	.timeline {
+		width: 100%;
+	}
+
+	.time-slot {
+		width: 100%;
+	}
+}
+
+.user-search-results {
+	list-style-type: none;
+	padding: 0;
+	margin: 10px 0;
+}
+
+.user-search-result {
+	padding: 10px;
+	margin-bottom: 5px;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+	color: #4b2c82;
+	font-weight: bold;
+	text-align: center;
+}
+
+.user-search-result:hover {
+	background-color: #4b2c82;
+	color: white;
+	transform: scale(1.05);
+}
+
+.selected-users {
+	list-style-type: none;
+	padding: 0;
+	margin: 10px 0;
+}
+
+.selected-users li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	margin-bottom: 5px;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+	color: #333;
+}
+
+.selected-users li button {
+	background-color: #d9534f;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	font-size: 14px;
+	width: fit-content;
+	flex-shrink: 0;
+	margin-left: 10px;
+}
+
+.selected-users li button:hover {
+	background-color: #c9302c;
 }

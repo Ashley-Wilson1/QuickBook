@@ -71,14 +71,13 @@ def send_booking_reminders():
 
     current_time = timezone.now()  
 
-    one_hour_start = current_time + timedelta(minutes=30)  # 30 minutes from now
-    one_hour_end = current_time + timedelta(hours=1.5)  # 1.5 hours from now
+    one_hour_start = current_time + timedelta(minutes=30)  
+    one_hour_end = current_time + timedelta(hours=1.5)  
 
     # 1-day reminder window
-    one_day_start = current_time + timedelta(hours=22.5)   # 1 day from now
-    one_day_end = current_time + timedelta(hours=25.5)     # 1 day + 3 hours
+    one_day_start = current_time + timedelta(hours=22.5)   
+    one_day_end = current_time + timedelta(hours=25.5)     
 
-    # Find bookings that start within these windows
     one_hour_bookings = RoomBooking.objects.filter(
         start_datetime__range=(one_hour_start, one_hour_end)
     )

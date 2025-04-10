@@ -25,7 +25,7 @@ class CreateBooking(generics.ListCreateAPIView):
     
 
     def get_queryset(self):
-        return RoomBooking.objects.filter(users=self.request.user)  # Show only the user's bookings
+        return RoomBooking.objects.filter(users=self.request.user)  
 
     
 
@@ -35,7 +35,7 @@ class CreateBooking(generics.ListCreateAPIView):
         end_datetime = self.request.data.get("end_datetime")
         user_ids = self.request.data.get("users", [])
         purpose = self.request.data.get("purpose", "")
-        requested_room = get_object_or_404(Room, id=room_id)  # Ensure the room exists
+        requested_room = get_object_or_404(Room, id=room_id) 
 
         if not self.request.user.verified:
             raise PermissionDenied("You must be verified by an admin to book a room.")
@@ -49,7 +49,6 @@ class CreateBooking(generics.ListCreateAPIView):
         start_datetime = local_tz.localize(datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")).astimezone(pytz.UTC)
         end_datetime = local_tz.localize(datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")).astimezone(pytz.UTC)
 
-        # Create the RoomBooking instance
         booking = RoomBooking(
             room=requested_room,
             start_datetime=start_datetime,
@@ -58,7 +57,6 @@ class CreateBooking(generics.ListCreateAPIView):
         )
 
         try:
-            # Save the booking and associate the users
             booking.save()
             booking.users.set(users)
             
@@ -70,7 +68,6 @@ class CreateBooking(generics.ListCreateAPIView):
                 )
 
             send_booking_email.delay(booking.id, [user.id for user in users])
-            print(f"Users added to booking: {[user.username for user in users]}")  # Debugging line
 
         except ValidationError as e:
             raise DRFValidationError({"error": e.message})
@@ -80,12 +77,11 @@ class BookingDelete(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return RoomBooking.objects.filter(users=self.request.user)  # Allow any user in the booking to delete it
+        return RoomBooking.objects.filter(users=self.request.user) 
 
     def delete(self, request, *args, **kwargs):
         booking = get_object_or_404(RoomBooking, pk=kwargs["pk"])
 
-        # Ensure the authenticated user is part of the booking
         if request.user not in booking.users.all():
             return Response({"error": "You are not authorized to cancel this booking."}, status=403)
 
@@ -95,7 +91,7 @@ class BookingDelete(generics.DestroyAPIView):
 class RoomCreate(generics.CreateAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]  # Restrict to admin users
+    permission_classes = [IsAuthenticated, IsAdminUser]  
 
     def perform_create(self, serializer):
         serializer.save()  
@@ -132,9 +128,9 @@ class BookingDetailView(APIView):
 
     def get(self, request, booking_id):
         booking = get_object_or_404(RoomBooking, id=booking_id)
-        print("Booking Data:", booking)
+        
         serializer = RoomBookingSerializer(booking)
-        print("Serialized Data:", serializer.data)
+        
         return Response(serializer.data)
     
 
@@ -156,7 +152,6 @@ class AvailableTimesView(APIView):
             start_datetime__date=date
         )
 
-        local_tz = pytz.timezone("Europe/London")
 
         booked_slots = [
             {
@@ -169,11 +164,10 @@ class AvailableTimesView(APIView):
         available_slots = []
         for hour in range(24):
             start = time(hour)
-            end = time(hour + duration) if (hour + duration) < 24 else time(23, 59)  # Adjust to 23:59
+            end = time(hour + duration) if (hour + duration) < 24 else time(23, 59)  
 
             is_available = True
 
-            # Check if the slot overlaps with any booked time
             for slot in booked_slots:
                 slot_start = datetime.strptime(slot["start"], "%H:%M").time()
                 slot_end = datetime.strptime(slot["end"], "%H:%M").time()

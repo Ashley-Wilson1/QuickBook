@@ -11,7 +11,6 @@ class NotificationViewsTest(TestCase):
         User = get_user_model()
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword")
 
-        # Obtain the JWT token by logging in
         login_url = reverse("get_token")  
         response = self.client.post(login_url, {"username": "testuser", "password": "testpassword"})
         

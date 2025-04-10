@@ -11,7 +11,7 @@ services:
          POSTGRES_PASSWORD: ${DB_PASSWORD}
          POSTGRES_DB: ${DB_NAME}
       ports:
-         - "5432:5432" # Expose the database to the host
+         - "5432:5432"
       volumes:
          - postgres_data:/var/lib/postgresql/data
 
@@ -19,7 +19,7 @@ services:
       build: ./room_booking_system
       container_name: backend
       environment:
-         - DB_HOST=db # Set the database host to the Docker service name
+         - DB_HOST=db
          - DB_USER=${DB_USER}
          - DB_PASSWORD=${DB_PASSWORD}
          - DB_NAME=${DB_NAME}
@@ -61,7 +61,7 @@ services:
       volumes:
          - ./room_booking_system:/app
       environment:
-         - DB_HOST=db # Set the database host to the Docker service name
+         - DB_HOST=db
          - DB_USER=${DB_USER}
          - DB_PASSWORD=${DB_PASSWORD}
          - DB_NAME=${DB_NAME}

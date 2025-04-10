@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import "../styles/Booking.css";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
 function RoomBookingForm() {
@@ -36,27 +35,25 @@ function RoomBookingForm() {
 		fetchUser();
 	}, []);
 
-	// Fetch buildings on component mount
 	useEffect(() => {
 		api.get("/room_booking/buildings/")
 			.then((response) => setBuildings(response.data))
 			.catch((error) => console.error("Error fetching buildings:", error));
 	}, []);
 
-	// Fetch rooms when a building is selected
 	useEffect(() => {
 		if (selectedBuilding) {
 			api.get(`/room_booking/rooms/?building=${selectedBuilding}`)
 				.then((response) => setRooms(response.data))
 				.catch((error) => console.error("Error fetching rooms:", error));
 		} else {
-			setRooms([]); // Clear rooms if no building is selected
+			setRooms([]);
 		}
 	}, [selectedBuilding]);
 
 	const handleBuildingChange = (e) => {
 		setSelectedBuilding(e.target.value);
-		setSelectedRoom(""); // Reset the selected room when building changes
+		setSelectedRoom("");
 	};
 
 	const handleRoomChange = (e) => {
@@ -109,17 +106,16 @@ function RoomBookingForm() {
 		const endTime = new Date(selectedDateTime);
 		endTime.setHours(selectedDateTime.getHours() + duration);
 
-		// Find consecutive available slots that fit the required duration
 		let isAvailable = true;
 		let currentTime = new Date(selectedDateTime);
 
 		for (let i = 0; i < duration; i++) {
-			const currentHour = currentTime.toISOString().split("T")[1].slice(0, 5); // Extract "HH:MM"
+			const currentHour = currentTime.toISOString().split("T")[1].slice(0, 5);
 			if (!availableTimes.some((slot) => slot.start === currentHour)) {
 				isAvailable = false;
 				break;
 			}
-			currentTime.setHours(currentTime.getHours() + 1); // Move to next hour
+			currentTime.setHours(currentTime.getHours() + 1);
 		}
 
 		if (!isAvailable) {
@@ -130,18 +126,17 @@ function RoomBookingForm() {
 		setStartDateTime(selectedDateTime.toISOString().slice(0, 16));
 		setEndDateTime(endTime.toISOString().slice(0, 16));
 		setSelectedTimeSlot({ start: selectedDateTime, end: endTime });
-		setError(""); // Clear previous error
+		setError("");
 	};
 
 	const isTimeSlotSelected = (timeSlot) => {
 		if (!selectedTimeSlot) return false;
 
-		// Convert the time slot start to a Date object
 		const timeSlotStart = new Date(`${selectedDate.toISOString().split("T")[0]}T${timeSlot.start}:00Z`);
 
-		// Check if the selected slot falls within the chosen duration range
 		return timeSlotStart >= selectedTimeSlot.start && timeSlotStart < selectedTimeSlot.end;
 	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
@@ -160,14 +155,6 @@ function RoomBookingForm() {
 		}
 
 		const usersToSubmit = [loggedInUserId, ...selectedUsers.map((user) => user.id)];
-
-		console.log("Request Data:", {
-			room_id: selectedRoom,
-			start_datetime: startDateTime,
-			end_datetime: endDateTime,
-			users: usersToSubmit,
-			purpose: purpose,
-		});
 
 		try {
 			const res = await api.post("/room_booking/bookings/", {
@@ -259,7 +246,7 @@ function RoomBookingForm() {
 						onChange={(e) => setSelectedDate(new Date(e.target.value))}
 						required
 					/>
-					{/* Building Dropdown */}
+
 					<label htmlFor="building">Building</label>
 					<select id="building" value={selectedBuilding} onChange={handleBuildingChange}>
 						<option value="">Select a building</option>
@@ -269,7 +256,7 @@ function RoomBookingForm() {
 							</option>
 						))}
 					</select>
-					{/* Room Dropdown */}
+
 					<label htmlFor="room">Room</label>
 					<select id="room" value={selectedRoom} onChange={handleRoomChange} disabled={!selectedBuilding}>
 						<option value="">Select a room</option>

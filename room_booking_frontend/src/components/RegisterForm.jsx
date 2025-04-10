@@ -16,7 +16,7 @@ function RegisterForm({ route }) {
 
 	const handleSubmit = async (e) => {
 		setLoading(true);
-		e.preventDefault(); //stops us from refreshing the page
+		e.preventDefault();
 
 		try {
 			const res = await api.post(route, {
@@ -30,10 +30,8 @@ function RegisterForm({ route }) {
 			navigate("/login");
 		} catch (error) {
 			if (error.response && error.response.data) {
-				// Set specific field errors if API returns validation errors
 				setErrors(error.response.data);
 			} else {
-				// Set general error if no specific field error is returned
 				setErrors({ general: "Registration failed. Please try again." });
 			}
 		} finally {

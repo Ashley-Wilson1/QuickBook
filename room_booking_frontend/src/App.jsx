@@ -7,6 +7,7 @@ import RoomBooking from "./pages/RoomBooking";
 import NotFound from "./pages/NotFound";
 import BookingDetails from "./pages/BookingDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import "./styles/App.css";
 
 function Logout() {
 	localStorage.clear();
@@ -14,7 +15,6 @@ function Logout() {
 }
 
 function RegisterAndLogout() {
-	//so no old access tokens are being used
 	localStorage.clear();
 	return <Register />;
 }

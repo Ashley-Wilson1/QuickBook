@@ -28,7 +28,7 @@ class UserAPITest(APITestCase):
         data = {"username": "testuser", "password": "securepassword"}
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("access", response.data)  # Ensure access token is returned
+        self.assertIn("access", response.data)  
 
     def test_logout(self):
         url = reverse("logout")

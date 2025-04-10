@@ -14,7 +14,7 @@ function LoginForm({ route }) {
 
 	const handleSubmit = async (e) => {
 		setLoading(true);
-		e.preventDefault(); //stops us from refreshing the page
+		e.preventDefault();
 
 		try {
 			const res = await api.post(route, { username, password });
@@ -23,10 +23,9 @@ function LoginForm({ route }) {
 			navigate("/");
 		} catch (error) {
 			if (error.response && error.response.data) {
-				const errorMessage = error.response.data.error || error.response.data.detail; // Check both formats
+				const errorMessage = error.response.data.error || error.response.data.detail;
 
 				if (errorMessage.includes("No active account found")) {
-					// This is the default Django error for incorrect username or password
 					setErrors({ username: "", password: "Incorrect username or password.", general: "" });
 				} else if (errorMessage.includes("Username does not exist")) {
 					setErrors({ username: errorMessage, password: "", general: "" });

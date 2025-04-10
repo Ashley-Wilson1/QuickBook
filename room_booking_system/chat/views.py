@@ -21,7 +21,6 @@ class SendMessageView(APIView):
     def post(self, request, booking_id):
         booking = get_object_or_404(RoomBooking, id=booking_id)
 
-        # Check if the user is part of the booking
         if request.user not in booking.users.all():
             return Response({"error": "You are not part of this booking"}, status=403)
 

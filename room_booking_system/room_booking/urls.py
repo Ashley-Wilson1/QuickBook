@@ -1,5 +1,5 @@
 from django.urls import path
-from room_booking.views import CreateBooking, BookingDelete, RoomListView, UserBookingsView, UserBookingsView, BookingDetailView,AvailableTimesView,RoomCreate,BuildingListView, RoomListByBuildingView
+from room_booking.views import CreateBooking, BookingDelete, UserBookingsView, UserBookingsView, BookingDetailView,AvailableTimesView,RoomCreate,BuildingListView, RoomListByBuildingView
 
 urlpatterns = [
     path('bookings/',CreateBooking.as_view(),name='booking-list'),

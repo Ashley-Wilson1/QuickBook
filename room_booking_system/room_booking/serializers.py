@@ -18,7 +18,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class RoomBookingSerializer(serializers.ModelSerializer):
     users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
     room = RoomSerializer(read_only=True)
-    users_detail = UserSerializer(source='users', many=True, read_only=True)  # Add this field
+    users_detail = UserSerializer(source='users', many=True, read_only=True) 
 
     formatted_start_datetime = serializers.SerializerMethodField()
     formatted_end_datetime = serializers.SerializerMethodField()

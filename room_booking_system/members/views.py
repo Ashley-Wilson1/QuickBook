@@ -14,15 +14,14 @@ from .serializers import UserSerializer
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]  # No need for authentication during signup
+    permission_classes = [AllowAny]  
 
 class RetrieveUserView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access their profile
+    permission_classes = [IsAuthenticated]  
 
     def get_object(self):
-        # Ensure the user can only access their own details
         return self.request.user
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -38,10 +37,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         except CustomUser.DoesNotExist:
             return Response({"error": "Username does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Call parent class for authentication
         response = super().post(request, *args, **kwargs)
 
-        # If authentication fails (e.g., wrong password), return a specific error
         if response.status_code == 401:
             return Response({"error": "Incorrect password."}, status=status.HTTP_400_BAD_REQUEST)
 

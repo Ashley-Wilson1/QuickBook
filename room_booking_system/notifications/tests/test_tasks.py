@@ -6,18 +6,17 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import timedelta
 import datetime
+
 class NotificationTasksTest(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword")
         
-        # Create a Room instance
         self.room = Room.objects.create(number="101", capacity=10)
 
-        # Set the booking time to match the reminder window (1 hour window)
         self.booking = RoomBooking.objects.create(
             room=self.room,
-            start_datetime=timezone.make_aware(datetime.datetime(2025, 4, 1, 19, 0, 0)),  # This will fall into the 1-hour window
+            start_datetime=timezone.make_aware(datetime.datetime(2025, 4, 1, 19, 0, 0)), 
             end_datetime=timezone.make_aware(datetime.datetime(2025, 4, 1, 21, 0, 0)),
             purpose="Test Booking"
         )
@@ -39,9 +38,8 @@ class NotificationTasksTest(TestCase):
     @patch("notifications.tasks.send_mail")
     def test_send_booking_reminders(self, mock_send_mail):
         """Test sending booking reminders"""
-        # Create a booking that falls within the 1-hour reminder window
         current_time = timezone.now()
-        start_time = current_time + timedelta(minutes=45)  # 45 minutes from now
+        start_time = current_time + timedelta(minutes=45) 
         end_time = start_time + timedelta(hours=1)
 
         booking = RoomBooking.objects.create(
@@ -52,11 +50,9 @@ class NotificationTasksTest(TestCase):
         )
         booking.users.add(self.user)
 
-        # Call the task
         send_booking_reminders()
 
-        # Assert that send_mail was called
         mock_send_mail.assert_called_once()
         call_args = mock_send_mail.call_args
-        self.assertIn("Reminder: Booking in 1 hour", call_args[0][0])  # Subject
-        self.assertIn("Reminder Test", call_args[0][1])  # Message body
+        self.assertIn("Reminder: Booking in 1 hour", call_args[0][0]) 
+        self.assertIn("Reminder Test", call_args[0][1])  
