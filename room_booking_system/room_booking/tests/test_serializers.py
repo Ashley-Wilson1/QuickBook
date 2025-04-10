@@ -9,9 +9,9 @@ User = get_user_model()
 
 class RoomSerializerTest(TestCase):
     def test_room_serialization(self):
-        room = Room.objects.create(number=101, capacity=5)
+        room = Room.objects.create(number=101, capacity=5, building="James Graham")
         serializer = RoomSerializer(room)
-        expected_data = {"id": room.id, "number": 101, "capacity": 5}
+        expected_data = {"id": room.id, "number": 101, "capacity": 5, "building": "James Graham"}
         self.assertEqual(serializer.data, expected_data)
 
 class RoomBookingSerializerTest(TestCase):

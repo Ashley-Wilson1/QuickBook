@@ -8,28 +8,18 @@ from datetime import timedelta
 User = get_user_model()
 
 class RoomBookingAPITest(APITestCase):
-    
     def setUp(self):
-        self.user = User.objects.create_superuser(username="testuser", password="securepassword",email="test@email.com")
+        self.user = User.objects.create_superuser(
+            username="testuser", password="securepassword", email="test@email.com", verified=True
+        )
         self.client.force_authenticate(user=self.user)  # Authenticate the user
 
-        self.room = Room.objects.create(number=101, capacity=5)
+        self.room = Room.objects.create(number=101, capacity=5, building="Main Building")
 
         self.booking_start = timezone.now() + timedelta(hours=1)
         self.booking_end = self.booking_start + timedelta(hours=2)
 
-    def test_create_room(self):
-        
-        url = reverse("room-create")
-        data = {"number": 102, "capacity": 10}
-        response = self.client.post(url, data, format="json")
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(Room.objects.count(), 2)  # One from setup + new one
-        self.assertEqual(Room.objects.get(number=102).capacity, 10)
-
     def test_create_booking(self):
-        
         url = reverse("booking-list")
         data = {
             "room_id": self.room.id,
@@ -43,6 +33,18 @@ class RoomBookingAPITest(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(RoomBooking.objects.count(), 1)
         self.assertEqual(RoomBooking.objects.first().purpose, "Study Group")
+
+    def test_create_room(self):
+        
+        url = reverse("room-create")
+        data = {"number": 102, "capacity": 10}
+        response = self.client.post(url, data, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Room.objects.count(), 2)  # One from setup + new one
+        self.assertEqual(Room.objects.get(number=102).capacity, 10)
+
+    
 
     def test_delete_booking(self):
         
