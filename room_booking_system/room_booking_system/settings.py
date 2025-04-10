@@ -19,7 +19,12 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+#use top load for docker and bottom for local
+# unset DB_HOST in terminal and set running locally
+
 load_dotenv(dotenv_path=os.path.join(BASE_DIR.parent, '.env'))
+#load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env.local'))
+print("Loaded DB_HOST:",os.getenv("DB_HOST"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -105,7 +110,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'quickbook'),
         'USER': os.getenv('DB_USER', 'quickbookuser'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),  # Use 'db' in Docker
+        'HOST': os.getenv('DB_HOST', 'localhost' if os.getenv('RUNNING_LOCALLY') else 'db'), 
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
@@ -129,7 +134,39 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'members': {  
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -147,13 +184,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'  # URL prefix for static files
 
-# Directory where `collectstatic` will gather all static files
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Additional directories to look for static files (optional, for development)
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
