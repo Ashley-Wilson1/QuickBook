@@ -3,7 +3,8 @@ import api from "../api";
 import BookingList from "../components/BookingList";
 
 function UserBookings() {
-	const [bookings, setBookings] = useState([]);
+	const [currentBookings, setCurrentBookings] = useState([]);
+	const [oldBookings, setOldBookings] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
@@ -11,7 +12,8 @@ function UserBookings() {
 		const fetchBookings = async () => {
 			try {
 				const res = await api.get("room_booking/user/bookings/");
-				setBookings(res.data);
+				setCurrentBookings(res.data.current_bookings);
+				setOldBookings(res.data.old_bookings);
 			} catch (error) {
 				setError("Error fetching bookings. Please try again later.");
 				console.error("Error fetching bookings:", error);
@@ -34,7 +36,8 @@ function UserBookings() {
 
 	return (
 		<div className="user-bookings">
-			<BookingList bookings={bookings} />{" "}
+			<BookingList bookings={currentBookings} title="Your Current Bookings" />
+			<BookingList bookings={oldBookings} title="Your Old Bookings" />
 		</div>
 	);
 }

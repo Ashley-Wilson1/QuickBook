@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
+from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from rest_framework import generics, status
@@ -116,9 +116,17 @@ class UserBookingsView(generics.ListAPIView):
     serializer_class = DetailedRoomBookingSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return RoomBooking.objects.filter(users=self.request.user).prefetch_related('users')
+    def get(self, request):
+        user = request.user
+        current_time = now()
 
+        current_bookings = RoomBooking.objects.filter(users=user, end_datetime__gte=current_time)
+        old_bookings = RoomBooking.objects.filter(users=user, end_datetime__lt=current_time)
+
+        return Response({
+            "current_bookings": DetailedRoomBookingSerializer(current_bookings, many=True).data,
+            "old_bookings": DetailedRoomBookingSerializer(old_bookings, many=True).data,
+        })
 class BookingDetailView(APIView):
     permission_classes = [IsAuthenticated]
 

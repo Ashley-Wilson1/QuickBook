@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ['id', 'number', 'capacity']  
+        fields = ['id', 'number', 'capacity','building']  
 
 class RoomBookingSerializer(serializers.ModelSerializer):
     users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
