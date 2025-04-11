@@ -50,3 +50,4 @@ wcwidth==0.2.13
 Werkzeug==2.2.3
 gunicorn==20.1.0
 whitenoise==6.9.0
+wait-for-it==2.3.0

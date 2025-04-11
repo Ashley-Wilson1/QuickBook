@@ -3,15 +3,19 @@ from django.dispatch import receiver
 from .models import Message
 from notifications.models import Notification
 from notifications.tasks import send_offline_message_email
+import sys
 
 @receiver(post_save, sender=Message)
 def send_message_notification(sender, instance, created, **kwargs):
+    if 'loaddata' in sys.argv:
+        return
+
     if created:
-        users = instance.booking.users.exclude(id=instance.user.id)  
+        users = instance.booking.users.exclude(id=instance.user.id)
 
         message_preview = instance.text[:50] + ("..." if len(instance.text) > 50 else "")
 
-        offline_users = users.filter(is_online=False) 
+        offline_users = users.filter(is_online=False)
 
         for user in users:
             Notification.objects.create(
