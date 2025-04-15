@@ -37,6 +37,7 @@ function BookingDetails() {
 		<div className="booking-details">
 			<h2>Booking Details</h2>
 			<p>Purpose: {booking.purpose || "No purpose specified"}</p>
+			<p>Building: {booking.room.building}</p>
 			<p>Room: {booking.room.number}</p>
 			<p>Start Time: {new Date(booking.start_datetime).toLocaleString()}</p>
 			<p>End Time: {new Date(booking.end_datetime).toLocaleString()}</p>
