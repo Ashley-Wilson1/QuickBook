@@ -5,6 +5,9 @@ from django.shortcuts import get_object_or_404
 from .models import Message
 from .serializers import MessageSerializer
 from room_booking.models import RoomBooking
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from .models import Message
 
 class BookingMessagesListView(generics.ListAPIView):
     serializer_class = MessageSerializer
@@ -31,3 +34,24 @@ class SendMessageView(APIView):
         )
 
         return Response(MessageSerializer(message).data)
+
+
+@require_GET
+def get_chat_history(request, booking_id):
+    messages = Message.objects.filter(booking__id=booking_id).order_by("timestamp")
+    return JsonResponse({
+        "messages": [
+            {
+                "id": message.id,
+                "user": {
+                    "id": message.user.id,
+                    "username": message.user.username,
+                    "first_name": message.user.first_name,
+                    "last_name": message.user.last_name,
+                },
+                "text": message.text,
+                "timestamp": message.timestamp.isoformat(),
+            }
+            for message in messages
+        ]
+    })
