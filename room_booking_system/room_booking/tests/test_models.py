@@ -51,7 +51,7 @@ class RoomBookingModelTest(TestCase):
             end_datetime=self.end_time
         )
 
-        with self.assertRaises(Exception):  # Should raise ValidationError
+        with self.assertRaises(Exception):  
             RoomBooking.objects.create(
                 room=self.room,
                 start_datetime=self.start_time,
